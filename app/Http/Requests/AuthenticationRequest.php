@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -14,7 +15,7 @@ class AuthenticationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,7 +26,7 @@ class AuthenticationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'string|required',
+            'user_name' => 'string|required',
             'password' => 'required',
             'device_name' => 'required'
         ];
@@ -33,11 +34,11 @@ class AuthenticationRequest extends FormRequest
 
     public function authenticateUser()
     {
-        $user = User::where('username', $this->username);
+        $user = User::where('user_name', $this->user_name)->first();
 
         if (!$user || !Hash::check($this->password, $user->password)) {
             throw ValidationException::withMessages([
-                'username' => ['The provided credentials are incorrect.'],
+                'user_name' => ['The provided credentials are incorrect.'],
             ]);
         }
 
