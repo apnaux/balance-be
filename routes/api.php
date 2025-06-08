@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/transactions')->group(function () {
         Route::get('/index', [TransactionController::class, 'index']);
         Route::post('/create', [TransactionController::class, 'create']);
+        Route::post('/post-transaction', [TransactionController::class, 'postTransaction']);
     });
 
     Route::prefix('/accounts')->group(function () {

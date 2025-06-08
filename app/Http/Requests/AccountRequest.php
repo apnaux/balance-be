@@ -63,7 +63,7 @@ class AccountRequest extends FormRequest
                 ->whereHasMorph('transactable', [Account::class], function ($query) use ($account) {
                     $query->where('id', $account->id);
                 })
-                // ->whereNotNull('posted_at')
+                ->whereNotNull('posted_at')
                 ->whereBetween('created_at', [$previous, $next])
                 ->get();
 

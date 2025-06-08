@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -27,9 +28,9 @@ class MakeTransactionRequest extends FormRequest
         return [
             'amount' => 'numeric|required',
             'name' => 'string|required',
-            'recurring_transaction_id' => 'integer|exists:App\Models\RecurringTransaction,id|nullable',
+            'recurring_transaction_id' => 'integer|exists:recurring_transactions,id|nullable',
             'tag_id' => 'integer|exists:tags,id|required',
-            'transactable_type' => 'string|required',
+            'transactable_type' => 'string|in:Account|required',
             'transactable_id' => 'integer|required'
         ];
     }
@@ -52,7 +53,8 @@ class MakeTransactionRequest extends FormRequest
             'name' => $this->name,
             'amount' => $this->amount,
             'recurring_transaction_id' => $this->recurring_transaction_id ?? null,
-            'tag_id' =>  $this->tag_id
+            'tag_id' =>  $this->tag_id,
+            'posted_at' => $transactable->type == 'credit' ? null : Carbon::now('UTC'->toDateTimeString())
         ]);
 
         $transaction->user()->associate(Auth::user());
