@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->float('amount', 2);
             $table->foreignId('recurring_transaction_id')->nullable();
+            $table->foreignId('tag_id');
             $table->morphs('transactable');
-            $table->morphs('taggable');
             $table->timestamp('posted_at')->nullable();
             $table->timestamps();
         });

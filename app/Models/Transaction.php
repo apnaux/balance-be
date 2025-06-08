@@ -11,6 +11,8 @@ class Transaction extends Model
     protected $fillable = [
         'name',
         'amount',
+        'recurring_transaction_id',
+        'tag_id',
         'posted_at'
     ];
 
@@ -19,9 +21,9 @@ class Transaction extends Model
         return $this->morphTo();
     }
 
-    public function taggable() : MorphTo
+    public function tag() : BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(Tag::class);
     }
 
     public function recurringTransaction() : BelongsTo
