@@ -54,7 +54,7 @@ class MakeTransactionRequest extends FormRequest
             'amount' => $this->amount,
             'recurring_transaction_id' => $this->recurring_transaction_id ?? null,
             'tag_id' =>  $this->tag_id,
-            'posted_at' => $transactable->type == 'credit' ? null : Carbon::now('UTC'->toDateTimeString())
+            'posted_at' => $transactable->type == 'credit' ? null : Carbon::now('UTC')->toDateTimeString()
         ]);
 
         $transaction->user()->associate(Auth::user());
