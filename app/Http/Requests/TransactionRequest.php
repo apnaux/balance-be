@@ -49,6 +49,10 @@ class TransactionRequest extends FormRequest
                 'id as value'
             ]);
         })
+        ->with([
+            'tag',
+            'transactable'
+        ])
         ->where('user_id', Auth::id())
         ->when(filled($this->from_recurring), function ($query) {
             $query->whereNotNull('recurring_transaction_id');
