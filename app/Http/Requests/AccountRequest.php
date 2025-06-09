@@ -37,7 +37,11 @@ class AccountRequest extends FormRequest
     public function retrieve()
     {
         $options = Auth::user()->option;
-        return Account::where('user_id', Auth::id())
+        return Account::with([
+                'tag',
+                'transactable'
+            ])
+            ->where('user_id', Auth::id())
             ->when(filled($this->search), function ($query) {
                 $query->where('name', 'like', "%{$this->search}%");
             })
