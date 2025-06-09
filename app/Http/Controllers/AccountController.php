@@ -28,9 +28,9 @@ class AccountController extends Controller
         $account = new Account();
         $account->name = $request->name;
         $account->type = $request->type;
-        $account->limit = $request->limit;
-        $account->statement_date = $request->statement_date;
-        $account->days_before_due = $request->days_before_due;
+        $account->limit = $request->type == 'credit' ? $request->limit : null;
+        $account->statement_date = $request->type == 'credit' ? $request->statement_date : 1;
+        $account->days_before_due = $request->type == 'credit' ? $request->days_before_due : null;
 
         $account->user()->associate(Auth::user());
         $account->save();

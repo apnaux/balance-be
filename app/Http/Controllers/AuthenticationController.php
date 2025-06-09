@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthenticationRequest;
 use App\Models\User;
+use App\Models\UserOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthenticationController extends Controller
 {
@@ -24,6 +26,23 @@ class AuthenticationController extends Controller
 
         return response()->json([
             'message' => 'Your account has been created. You may now log in!'
+        ]);
+    }
+
+    public function setOptions(Request $request)
+    {
+        $request->validate([
+            'currency' => 'string|required',
+            'cycle_cutoff' => 'integer|max:31|required',
+            'allocated_budget' => 'numeric|required',
+            'timezone' => 'string|required',
+        ]);
+
+        User::find(Auth::id())->option()
+            ->updateOrCreate(['user_id' => Auth::id()], $request->all());
+
+        return response()->json([
+            'message' => 'Your options has been updated!'
         ]);
     }
 
