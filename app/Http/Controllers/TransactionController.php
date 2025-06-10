@@ -102,19 +102,28 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function update(Request $request)
+    {
+        Transaction::find($request->id)
+            ->update($request->fields);
+
+        return response()->json([
+            'message' => 'The transaction has been updated!'
+        ]);
+    }
+
+    public function delete(Request $request)
+    {
+        Transaction::find($request->id)->delete();
+
+        return response()->json([
+            'message' => 'The transaction has been deleted!'
+        ]);
+    }
+
     public function postTransaction(Request $request)
     {
-        $request->validate([
-            'transaction_id' => 'integer|exists:transactions,id|required'
-        ]);
-
-        $transaction = Transaction::find($request->transaction_id);
-        if($transaction->user_id !== Auth::id()){
-            throw ValidationException::withMessages([
-                'transaction_id' => 'This transaction does not exist.'
-            ]);
-        }
-
+        $transaction = Transaction::find($request->id);
         if(filled($transaction->posted_at)){
             throw ValidationException::withMessages([
                 'transaction_id' => 'This transaction is already posted.'
