@@ -6,9 +6,10 @@ use App\Models\Transaction;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class VerifyIfUserIsAllowed
+class VerifyIfTransactionIsFromUser
 {
     /**
      * Handle an incoming request.
@@ -22,7 +23,7 @@ class VerifyIfUserIsAllowed
                 'id' => 'integer|exists:transactions,id|required'
             ]);
 
-            $transaction = Transaction::find($request->user);
+            $transaction = Transaction::find($request->id);
             $message = '';
 
             if($transaction->user_id != Auth::id()){

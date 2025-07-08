@@ -3,8 +3,9 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Middleware\CheckIfTransactionCycleExists;
 use App\Http\Middleware\UserHasCompletedSetup;
-use App\Http\Middleware\VerifyIfUserIsAllowed;
+use App\Http\Middleware\VerifyIfTransactionIsFromUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -20,14 +21,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/set-options', [AuthenticationController::class, 'setOptions']);
     });
 
-    Route::middleware([UserHasCompletedSetup::class])->group(function () {
+    Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
         Route::prefix('/transactions')->group(function () {
-            Route::get('/summary', [TransactionController::class, 'summary']);
             Route::get('/index', [TransactionController::class, 'index']);
             Route::get('/per-cycle', [TransactionController::class, 'transactionsPerCycle']);
             Route::post('/create', [TransactionController::class, 'create']);
 
-            Route::middleware([VerifyIfUserIsAllowed::class])->group(function () {
+            Route::middleware([VerifyIfTransactionIsFromUser::class])->group(function () {
                 Route::post('/update', [TransactionController::class, 'update']);
                 Route::post('/delete', [TransactionController::class, 'delete']);
                 Route::post('/post-transaction', [TransactionController::class, 'postTransaction']);

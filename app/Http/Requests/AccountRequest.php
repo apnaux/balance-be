@@ -38,8 +38,7 @@ class AccountRequest extends FormRequest
     {
         $options = Auth::user()->option;
         return Account::with([
-                'tag',
-                'transactable'
+                'transactions'
             ])
             ->where('user_id', Auth::id())
             ->when(filled($this->search), function ($query) {
@@ -70,10 +69,10 @@ class AccountRequest extends FormRequest
                     })
                     ->whereNotNull('posted_at')
                     ->whereBetween('created_at', [$previous, $next])
-                    ->get();
+                    ->first();
 
-                $account->statement_balance = $balances[0]->statement_balance ?? 0;
-                $account->previous_balance = $balances[0]->previous_balance ?? 0;
+                $account->statement_balance = $balances->statement_balance ?? 0;
+                $account->previous_balance = $balances->previous_balance ?? 0;
                 return $account;
             });
     }

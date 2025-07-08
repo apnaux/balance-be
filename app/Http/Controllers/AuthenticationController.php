@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthenticationRequest;
 use App\Models\User;
 use App\Models\UserOption;
+use App\Models\UserTransactionCycle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
