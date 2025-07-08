@@ -21,23 +21,33 @@ class CheckIfTransactionCycleExists
         $options = UserOption::where('user_id', $request->user()->id)->first();
         $now = now($options->timezone)->toDateTimeString();
 
-        $transactionCycle = UserTransactionCycle::where('user_id', $request->user()->id)
+        $currentTransactionCycle = UserTransactionCycle::where('user_id', $request->user()->id)
             ->whereRaw("'$now' BETWEEN active_from AND active_until")
             ->first();
 
-        if(!filled($transactionCycle))
+        $transactionCycles = UserTransactionCycle::where('user_id', $request->user()->id)->get();
+
+        // TODO: If there are previous transaction cycles, create an array of all the dates
+        // starting from the end of the previous transaction cycle to the current date
+
+        if(!filled($currentTransactionCycle))
         {
             $start = Utils::getProperStatementDate($options->timezone, $options->cycle_cutoff)->toDateTimeString();
             $end = Utils::getProperStatementDate($options->timezone, $options->cycle_cutoff)->addMonth()->toDateTimeString();
 
-            $transactionCycle = new UserTransactionCycle();
-            $transactionCycle->user_id = $request->user()->id;
-            $transactionCycle->allocated_budget = $options->allocated_budget;
-            $transactionCycle->active_from = $start;
-            $transactionCycle->active_until = $end;
-            $transactionCycle->save();
+            $this->createTransactionCycle($request->user()->id, $options->budget, $start, $end);
         }
 
         return $next($request);
+    }
+
+    public function createTransactionCycle(int $userID, float $budget, string $startDate, string $endDate)
+    {
+        $transactionCycle = new UserTransactionCycle();
+        $transactionCycle->user_id = $userID;
+        $transactionCycle->allocated_budget = $budget;
+        $transactionCycle->active_from = $startDate;
+        $transactionCycle->active_until = $endDate;
+        $transactionCycle->save();
     }
 }
