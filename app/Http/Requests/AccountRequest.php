@@ -31,36 +31,44 @@ class AccountRequest extends FormRequest
         return [
             'search' => 'string|nullable',
             'type' => 'array|nullable',
-            'per_page' => 'integer|nullable'
+            'per_page' => 'integer|nullable',
+            'selection' => 'boolean|nullable'
         ];
     }
 
     public function retrieve()
     {
         $options = Auth::user()->option;
-        return Account::where('user_id', Auth::id())
+        $accounts = Account::where('user_id', Auth::id())
             ->when(filled($this->search), function ($query) {
                 $query->where('name', 'like', "%{$this->search}%");
             })
             ->when(filled($this->type), function ($query) {
                 $query->whereIn('type', $this->type);
-            })
-            ->paginate($this->per_page ?? 10)
-            ->through(function ($account) use ($options){
-                $previous = Utils::getProperStatementDate($options->timezone, $account->statement_date)->subMonth()->toIso8601String();
-                $now = Utils::getProperStatementDate($options->timezone, $account->statement_date)->toIso8601String();
-                $next = Utils::getProperStatementDate($options->timezone, $account->statement_date)->addMonth()->toIso8601String();
+            });
 
-                $balances = Transaction::select([
+        if (filled($this->selection) && $this->selection) {
+            $accounts = $accounts->get()->map(fn ($account) => [
+                'label' => $account->name,
+                'value' => $account->id,
+            ]);
+        } else {
+            $accounts = $accounts->paginate($this->per_page ?? 10)
+                ->through(function ($account) use ($options) {
+                    $previous = Utils::getProperStatementDate($options->timezone, $account->statement_date)->subMonth()->toIso8601String();
+                    $now = Utils::getProperStatementDate($options->timezone, $account->statement_date)->toIso8601String();
+                    $next = Utils::getProperStatementDate($options->timezone, $account->statement_date)->addMonth()->toIso8601String();
+
+                    $balances = Transaction::select([
                     DB::raw("SUM(
                         CASE WHEN created_at >= '$now' AND created_at <= '$next'
                         THEN amount ELSE 0 END
-                    ) as statement_balance"),
+                        ) as statement_balance"),
                     DB::raw("SUM(
                         CASE WHEN created_at >= '$previous' AND created_at <= '$now'
                         THEN amount ELSE 0 END
-                    ) as previous_balance"),
-                ])
+                        ) as previous_balance"),
+                    ])
                     ->where('user_id', Auth::id())
                     ->whereHasMorph('transactable', [Account::class], function ($query) use ($account) {
                         $query->where('id', $account->id);
@@ -70,9 +78,12 @@ class AccountRequest extends FormRequest
                     ->groupBy('user_id')
                     ->first();
 
-                $account->statement_balance = Utils::getFormattedAmount($balances->statement_balance, $account->currency);
-                $account->previous_balance = Utils::getFormattedAmount($balances->previous_balance, $account->currency);
-                return $account;
-            });
+                    $account->statement_balance = Utils::getFormattedAmount($balances->statement_balance, $account->currency);
+                    $account->previous_balance = Utils::getFormattedAmount($balances->previous_balance, $account->currency);
+                    return $account;
+                });
+        }
+
+        return $accounts;
     }
 }

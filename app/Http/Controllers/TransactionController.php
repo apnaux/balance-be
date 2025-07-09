@@ -81,7 +81,7 @@ class TransactionController extends Controller
             ", [Auth::id(), Account::class, Auth::id(), $request->iterations ?? 0])[0];
 
         return response()->json([
-            'statement_date' => Carbon::parse($cycle->active_from, $options->timezone)->format('Y-m-d'),
+            'statement_date' => Carbon::parse($cycle->active_from, 'UTC')->timezone($options->timezone)->format('Y-m-d'),
             'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
             'allocated_budget' => Number::currency(round($cycle->allocated_budget / 100, 2) ?? 0, $options->currency),
             'statement_balance' => Number::currency(round($cycle->statement_balance / 100, 2) ?? 0, $options->currency),

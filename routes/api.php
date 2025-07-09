@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\CheckIfTransactionCycleExists;
@@ -35,6 +36,11 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/delete', [TransactionController::class, 'delete']);
                 Route::post('/post-transaction', [TransactionController::class, 'postTransaction']);
             });
+        });
+
+        Route::prefix('/tags')->group(function () {
+            Route::post('/index', [TagController::class, 'index']);
+            Route::post('/create', [TagController::class, 'create']);
         });
 
         Route::prefix('/accounts')->group(function () {
