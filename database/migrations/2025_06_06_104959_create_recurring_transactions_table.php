@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'user_id');
             $table->string('name');
             $table->string('icon')->nullable();
-            $table->float('amount', 2);
+            $table->integer('amount');
             $table->integer('payment_date');
             $table->integer('grace_period');
             $table->timestamp('ends_at')->nullable();

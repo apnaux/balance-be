@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Number;
 
 class AccountRequest extends FormRequest
 {
@@ -69,10 +70,11 @@ class AccountRequest extends FormRequest
                     })
                     ->whereNotNull('posted_at')
                     ->whereBetween('created_at', [$previous, $next])
+                    ->groupBy('user_id')
                     ->first();
 
-                $account->statement_balance = $balances->statement_balance ?? 0;
-                $account->previous_balance = $balances->previous_balance ?? 0;
+                $account->statement_balance = Utils::getFormattedAmount($balances->statement_balance, $account->currency);
+                $account->previous_balance = Utils::getFormattedAmount($balances->previous_balance, $account->currency);
                 return $account;
             });
     }

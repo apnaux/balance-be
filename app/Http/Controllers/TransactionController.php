@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Utils;
 use App\Http\Requests\MakeTransactionRequest;
 use App\Http\Requests\TransactionRequest;
+use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\UserOption;
 use App\Models\UserTransactionCycle;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Number;
 use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
@@ -70,15 +72,17 @@ class TransactionController extends Controller
                 FROM user_transaction_cycles AS UTrC
                 JOIN transactions T ON T.user_id = UtrC.user_id
                     AND T.created_at BETWEEN UTrC.active_from AND UTrC.active_until
+                    AND T.transactable_type = ?
                 WHERE UTRC.user_id = ?
                 GROUP BY UTrC.id
                 LIMIT 1 OFFSET ?
-            ", [Auth::id(), Auth::id(), $request->iterations])[0];
+            ", [Auth::id(), Account::class, Auth::id(), $request->iterations])[0];
 
         $transactions = Transaction::with([
                 'tag',
                 'transactable'
             ])
+            ->where('transactable_type', Account::class)
             ->where('user_id', Auth::id())
             ->whereNotNull('posted_at')
             ->where(function ($query) use ($cycle) {
@@ -89,8 +93,8 @@ class TransactionController extends Controller
         return response()->json([
             'statement_date' => Carbon::parse($cycle->active_from, $options->timezone)->format('Y-m-d'),
             'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
-            'allocated_budget' => $cycle->allocated_budget ?? 0,
-            'statement_balance' => $cycle->statement_balance ?? 0,
+            'allocated_budget' => Number::currency(round($cycle->allocated_budget / 100, 2) ?? 0, $options->currency),
+            'statement_balance' => Number::currency(round($cycle->statement_balance / 100, 2) ?? 0, $options->currency),
             'last_item' => $request->iterations >= $cycle->cycle_counts - 1,
             'transactions' => $transactions
         ]);

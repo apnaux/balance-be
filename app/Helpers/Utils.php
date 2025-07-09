@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Number;
 
 class Utils
 {
@@ -19,5 +20,9 @@ class Utils
         $calculatedDate = Carbon::now($timezone)->setDay($cutoff)->startOfDay()->timezone('UTC');
         return $dayNow < $cutoff ? $calculatedDate->subMonth()
             : $calculatedDate;
+    }
+
+    public static function getFormattedAmount(int $unformatted, string $currency){
+        return Number::currency(round($unformatted / 100, 2), $currency);
     }
 }

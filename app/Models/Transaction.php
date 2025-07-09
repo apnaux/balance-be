@@ -19,10 +19,22 @@ class Transaction extends Model
         'posted_at'
     ];
 
+    protected $appends = [
+        'formatted_amount'
+    ];
+
     public function amount() : Attribute
     {
         return Attribute::make(
-            get: fn($value) => Number::currency($value, $this->currency),
+            get: fn ($value) => round($value / 100, 2),
+            set: fn ($value) => $value * 100
+        );
+    }
+
+    public function formattedAmount() : Attribute
+    {
+        return Attribute::make(
+            get: fn () => Number::currency($this->amount, $this->currency)
         );
     }
 

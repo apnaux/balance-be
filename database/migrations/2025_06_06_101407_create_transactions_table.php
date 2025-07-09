@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->string('name')->nullable();
             $table->string('currency')->default('PHP');
-            $table->float('amount', 2);
+            $table->unsignedBigInteger('amount');
             $table->foreignId('recurring_transaction_id')->nullable();
             $table->foreignId('tag_id');
             $table->morphs('transactable');

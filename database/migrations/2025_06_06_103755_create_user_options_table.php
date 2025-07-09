@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'user_id')->unique();
             $table->string('currency');
             $table->integer('cycle_cutoff');
-            $table->float('allocated_budget', 2);
+            $table->integer('allocated_budget');
             $table->string('timezone')->nullable();
             $table->timestamps();
         });

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->string('name');
             $table->enum('type', ['credit', 'debit', 'cash-on-hand']);
-            $table->float('limit', 2)->nullable();
+            $table->string('currency')->default('PHP');
+            $table->integer('limit')->nullable();
             $table->integer('statement_date')->comment('Should be set to 1 for debit and cash-on-hand');
             $table->integer('days_before_due')->nullable();
             $table->timestamps();
