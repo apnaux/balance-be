@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Transaction;
+use App\Models\UserOption;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,7 @@ class MakeTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'currency' => 'string|nullable',
             'amount' => 'numeric|required',
             'name' => 'string|required',
             'recurring_transaction_id' => 'integer|exists:recurring_transactions,id|nullable',
@@ -49,8 +51,10 @@ class MakeTransactionRequest extends FormRequest
             ]);
         }
 
+        $options = UserOption::where('user_id', Auth::id())->first();
         $transaction = new Transaction([
             'name' => $this->name,
+            'currency' => $options->currency,
             'amount' => $this->amount,
             'recurring_transaction_id' => $this->recurring_transaction_id ?? null,
             'tag_id' =>  $this->tag_id,
