@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Http\Requests\AuthenticationRequest;
 use App\Models\User;
 use App\Models\UserOption;
@@ -33,14 +34,27 @@ class AuthenticationController extends Controller
     public function setOptions(Request $request)
     {
         $request->validate([
-            'currency' => 'string|required',
-            'cycle_cutoff' => 'integer|max:31|required',
-            'allocated_budget' => 'numeric|required',
-            'timezone' => 'string|required',
+            'currency' => 'string|nullable',
+            'cycle_cutoff' => 'integer|max:31|nullable',
+            'allocated_budget' => 'numeric|nullable',
+            'timezone' => 'string|nullable',
         ]);
 
         User::find(Auth::id())->option()
             ->updateOrCreate(['user_id' => Auth::id()], $request->all());
+
+        $latestCycle = UserTransactionCycle::where('user_id', $request->user()->id)->orderByDesc('active_from')->first();
+
+        if(filled($latestCycle) && filled($request->cycle_cutoff)) {
+            $options = UserOption::where('user_id', Auth::id())->first();
+            $latestCycle->update([
+                'active_until' => Utils::getProperStatementDate($options->timezone, $request->cycle_cutoff)->addMonth()->toIso8601String()]
+            );
+        }
+
+        if(filled($latestCycle) && filled($request->allocated_budget)) {
+            $latestCycle->update(['allocated_budget' => $request->allocated_budget]);
+        }
 
         return response()->json([
             'message' => 'Your options has been updated!'

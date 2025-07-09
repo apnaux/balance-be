@@ -23,16 +23,12 @@ class VerifyIfTransactionIsFromUser
                 'id' => 'integer|exists:transactions,id|required'
             ]);
 
-            $transaction = Transaction::find($request->id);
-            $message = '';
+            $transaction = Transaction::where('id', $request->id)
+                ->where('user_id', Auth::id());
 
-            if($transaction->user_id != Auth::id()){
-                $message = 'This transaction does not exist.';
-            }
-
-            if(filled($message)){
+            if($transaction->doesntExist()){
                 return response()->json([
-                    'message' => $message
+                    'message' => 'This transaction does not exist.'
                 ], 422);
             }
         }

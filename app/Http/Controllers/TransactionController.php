@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
@@ -28,7 +29,7 @@ class TransactionController extends Controller
             ->orderByDesc('active_from')
             ->first();
 
-        $previousCycleStartData = Carbon::parse($currentCycleData->active_from, 'UTC')->subMonth()->toDateTimeString();
+        $previousCycleStartData = Carbon::parse($currentCycleData->active_from, 'UTC')->subMonth()->toIso8601String();
 
         $details = Transaction::select([
             DB::raw("SUM(
@@ -54,47 +55,25 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function transactionCyclesList(Request $request)
-    {
-        $options = UserOption::where('user_id', Auth::id())->first();
-
-        $transactionCycles = UserTransactionCycle::select([
-                'allocated_budget',
-                'active_from',
-                'active_until'
-            ])
-            ->where('user_id', Auth::id())
-            ->paginate(20)
-            ->through(function (UserTransactionCycle $cycle) use ($options) {
-                $startDate = Carbon::parse($cycle->active_from, 'UTC')->timezone($options->timezone)->toDateString();
-
-                $cycle->label = $startDate;
-                return $cycle;
-            });
-
-        return response()->json($transactionCycles);
-    }
-
     public function transactionsPerCycle(Request $request)
     {
         $request->validate([
-            'start_date' => 'string|nullable',
-            'end_date' => 'string|nullable',
+            'iterations' => 'integer|min:0|required'
         ]);
 
-        $details = Transaction::select([
-            DB::raw("SUM(
-                CASE WHEN created_at >= '$request->start_date' AND created_at <= '$request->end_date'
-                THEN amount ELSE 0 END
-            ) as statement_balance"),
-        ])
-            ->where('user_id', Auth::id())
-            ->whereNotNull('posted_at')
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->start_date, $request->end_date])
-                    ->orWhereBetween('posted_at', [$request->start_date, $request->end_date]);
-            })
-            ->first();
+        $options = UserOption::where('user_id', Auth::id())->first();
+        $cycle = DB::select("
+                SELECT
+                    UTrC.*,
+                    COALESCE(SUM(T.amount), 0) AS 'statement_balance',
+                    (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts'
+                FROM user_transaction_cycles AS UTrC
+                JOIN transactions T ON T.user_id = UtrC.user_id
+                    AND T.created_at BETWEEN UTrC.active_from AND UTrC.active_until
+                WHERE UTRC.user_id = ?
+                GROUP BY UTrC.id
+                LIMIT 1 OFFSET ?
+            ", [Auth::id(), Auth::id(), $request->iterations])[0];
 
         $transactions = Transaction::with([
                 'tag',
@@ -102,15 +81,18 @@ class TransactionController extends Controller
             ])
             ->where('user_id', Auth::id())
             ->whereNotNull('posted_at')
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->start_date, $request->end_date])
-                    ->orWhereBetween('posted_at', [$request->start_date, $request->end_date]);
+            ->where(function ($query) use ($cycle) {
+                $query->whereBetween('created_at', [$cycle->active_from, $cycle->active_until]);
             })
             ->paginate(20);
 
         return response()->json([
-            'statement_balance' => $details->statement_balance ?? 0,
-            'paginated' => $transactions
+            'statement_date' => Carbon::parse($cycle->active_from, $options->timezone)->format('Y-m-d'),
+            'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
+            'allocated_budget' => $cycle->allocated_budget ?? 0,
+            'statement_balance' => $cycle->statement_balance ?? 0,
+            'last_item' => $request->iterations >= $cycle->cycle_counts - 1,
+            'transactions' => $transactions
         ]);
     }
 
@@ -150,7 +132,7 @@ class TransactionController extends Controller
             ]);
         }
 
-        $transaction->posted_at = Carbon::now('UTC')->toDateTimeString();
+        $transaction->posted_at = Carbon::now('UTC')->toIso8601String();
         $transaction->save();
 
         return response()->json([

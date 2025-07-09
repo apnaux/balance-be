@@ -49,9 +49,9 @@ class AccountRequest extends FormRequest
             })
             ->paginate($this->per_page ?? 10)
             ->through(function ($account) use ($options){
-                $previous = Utils::getProperStatementDate($options->timezone, $account->statement_date)->subMonth()->toDateTimeString();
-                $now = Utils::getProperStatementDate($options->timezone, $account->statement_date)->toDateTimeString();
-                $next = Utils::getProperStatementDate($options->timezone, $account->statement_date)->addMonth()->toDateTimeString();
+                $previous = Utils::getProperStatementDate($options->timezone, $account->statement_date)->subMonth()->toIso8601String();
+                $now = Utils::getProperStatementDate($options->timezone, $account->statement_date)->toIso8601String();
+                $next = Utils::getProperStatementDate($options->timezone, $account->statement_date)->addMonth()->toIso8601String();
 
                 $balances = Transaction::select([
                     DB::raw("SUM(
