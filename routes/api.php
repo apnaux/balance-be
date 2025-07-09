@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\CheckIfTransactionCycleExists;
 use App\Http\Middleware\UserHasCompletedSetup;
 use App\Http\Middleware\VerifyIfTransactionIsFromUser;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('/register', [AuthenticationController::class, 'register']);
+Route::post('/register', [AuthenticationController::class, 'register'])->middleware(CheckIfRegistrationIsAllowed::class);
 Route::post('/authenticate', [AuthenticationController::class, 'authenticate']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -25,8 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
         Route::prefix('/transactions')->group(function () {
-            Route::get('/index', [TransactionController::class, 'index']);
-            Route::get('/per-cycle', [TransactionController::class, 'transactionsPerCycle']);
+            Route::post('/index', [TransactionController::class, 'index']);
+            Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle']);
             Route::post('/create', [TransactionController::class, 'create']);
 
             Route::middleware([VerifyIfTransactionIsFromUser::class])->group(function () {

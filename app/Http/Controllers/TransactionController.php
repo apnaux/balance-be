@@ -60,7 +60,7 @@ class TransactionController extends Controller
     public function transactionsPerCycle(Request $request)
     {
         $request->validate([
-            'iterations' => 'integer|min:0|required'
+            'iterations' => 'integer|min:0'
         ]);
 
         $options = UserOption::where('user_id', Auth::id())->first();
@@ -68,35 +68,26 @@ class TransactionController extends Controller
                 SELECT
                     UTrC.*,
                     COALESCE(SUM(T.amount), 0) AS 'statement_balance',
-                    (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts'
+                    (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts',
+                    UTrC.active_from,
+                    UTrC.active_until
                 FROM user_transaction_cycles AS UTrC
-                JOIN transactions T ON T.user_id = UtrC.user_id
+                LEFT JOIN transactions T ON T.user_id = UtrC.user_id
                     AND T.created_at BETWEEN UTrC.active_from AND UTrC.active_until
                     AND T.transactable_type = ?
                 WHERE UTRC.user_id = ?
                 GROUP BY UTrC.id
                 LIMIT 1 OFFSET ?
-            ", [Auth::id(), Account::class, Auth::id(), $request->iterations])[0];
-
-        $transactions = Transaction::with([
-                'tag',
-                'transactable'
-            ])
-            ->where('transactable_type', Account::class)
-            ->where('user_id', Auth::id())
-            ->whereNotNull('posted_at')
-            ->where(function ($query) use ($cycle) {
-                $query->whereBetween('created_at', [$cycle->active_from, $cycle->active_until]);
-            })
-            ->paginate(20);
+            ", [Auth::id(), Account::class, Auth::id(), $request->iterations ?? 0])[0];
 
         return response()->json([
             'statement_date' => Carbon::parse($cycle->active_from, $options->timezone)->format('Y-m-d'),
             'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
             'allocated_budget' => Number::currency(round($cycle->allocated_budget / 100, 2) ?? 0, $options->currency),
             'statement_balance' => Number::currency(round($cycle->statement_balance / 100, 2) ?? 0, $options->currency),
+            'active_from' => $cycle->active_from,
+            'active_until' => $cycle->active_until,
             'last_item' => $request->iterations >= $cycle->cycle_counts - 1,
-            'transactions' => $transactions
         ]);
     }
 

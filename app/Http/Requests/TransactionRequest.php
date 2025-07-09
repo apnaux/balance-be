@@ -33,6 +33,7 @@ class TransactionRequest extends FormRequest
             'per_page' => 'integer|nullable',
             'search' => 'string|nullable',
             'transaction_type' => 'array|nullable', // if the transaction type should only include anything from the accounts or goals
+            'cycle_start_end' => 'array|nullable'
         ];
     }
 
@@ -65,6 +66,9 @@ class TransactionRequest extends FormRequest
                 $query->whereIn('id', $this->default_tags);
             });
         })
+        ->when(filled($this->cycle_start_end), function ($query) {
+            $query->whereBetween('created_at', $this->cycle_start_end);
+        })
         ->when(filled($this->transaction_type), function ($query) {
             $transactables = [];
             foreach($this->transaction_type as $type){
@@ -78,6 +82,6 @@ class TransactionRequest extends FormRequest
             $query->whereHasMorph('transactable', $transactables);
         })
         ->orderByDesc('created_at')
-        ->paginate($this->per_page ?? 10);
+        ->cursorPaginate($this->per_page ?? 10);
     }
 }
