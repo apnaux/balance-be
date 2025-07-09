@@ -15,7 +15,9 @@ Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/authenticate', [AuthenticationController::class, 'authenticate']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/verify', fn () => null);
     Route::post('/revoke', [AuthenticationController::class, 'revoke']);
+
     Route::prefix('/user')->group(function () {
         Route::get('/index', fn () => User::with(['option'])->find(Auth::id()));
         Route::post('/set-options', [AuthenticationController::class, 'setOptions']);
