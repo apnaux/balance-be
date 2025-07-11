@@ -15,13 +15,11 @@ class AuthenticationController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'string|required',
             'user_name' => 'string|max:8|required|unique:users,user_name',
             'password' => 'max:12|required'
         ]);
 
         User::create([
-            'name' => $request->name,
             'user_name' => $request->user_name,
             'password' => $request->password
         ]);

@@ -1,0 +1,31 @@
+@theme {
+  --font-sans:
+    "Apfel Grotezk Mittel", "ui-sans-serif", "system-ui", "-apple-system",
+    "system-ui", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans",
+    "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --font-body:
+    "Apfel Grotezk Mittel", "ui-sans-serif", "system-ui", "-apple-system",
+    "system-ui", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans",
+    "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --font-ag-fett: "Apfel Grotezk Fett";
+  --font-ag-satt: "Apfel Grotezk Satt";
+
+  --color-nord-darkest: var(--nord0);
+  --color-nord-much-darker: var(--nord1);
+  --color-nord-darker: var(--nord2);
+  --color-nord-dark: var(--nord3);
+  --color-nord-light: var(--nord4);
+  --color-nord-lighter: var(--nord5);
+  --color-nord-lightest: var(--nord6);
+  --color-primary: var(--nord7);
+  --color-primary-accent: var(--nord8);
+  --color-secondary: var(--nord9);
+  --color-tertiary: var(--nord10);
+  --color-error: var(--nord11);
+  --color-warning: var(--nord12);
+  --color-caution: var(--nord13);
+  --color-success: var(--nord14);
+  --color-nord15: var(--nord15);
+}

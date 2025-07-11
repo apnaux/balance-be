@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@import "flowbite/src/themes/default";
+
+@import './theme.css';
+@import './base.css';
+@import './nord.css';
+
+@plugin "flowbite/plugin";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@source "../node_modules/flowbite";
+
+@font-face {
+	font-family: "Apfel Grotezk Mittel";
+	src: url("/public/fonts/ApfelGrotezk/ApfelGrotezk-Mittel.woff2") format('woff2');
+}
+
+@font-face {
+	font-family: "Apfel Grotezk Fett";
+	src: url("/public/fonts/ApfelGrotezk/ApfelGrotezk-Fett.woff2") format('woff2');
+}
+
+@font-face {
+	font-family: "Apfel Grotezk Satt";
+	src: url("/public/fonts/ApfelGrotezk/ApfelGrotezk-Satt.woff2") format('woff2');
+}
