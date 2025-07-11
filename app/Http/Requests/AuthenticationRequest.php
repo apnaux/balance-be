@@ -26,15 +26,24 @@ class AuthenticationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_name' => 'string|required',
-            'password' => 'required',
-            'device_name' => 'required'
+            'username' => 'required',
+            'password' => 'required'
         ];
     }
 
-    public function authenticateUser()
+    public function authenticate()
     {
-        $user = User::where('user_name', $this->user_name)->first();
+        if(Auth::attempt($this->all())){
+            $this->session()->regenerate();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function createToken()
+    {
+        $user = User::where('user_name', $this->username)->first();
 
         if (!$user || !Hash::check($this->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -42,6 +51,6 @@ class AuthenticationRequest extends FormRequest
             ]);
         }
 
-        return $user->createToken($this->device_name)->plainTextToken;
+        return $user->createToken(now()->timestamp)->plainTextToken;
     }
 }

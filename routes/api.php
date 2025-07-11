@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\API\AuthenticationController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/register', [AuthenticationController::class, 'register'])->middleware(CheckIfRegistrationIsAllowed::class);
-Route::post('/authenticate', [AuthenticationController::class, 'authenticate']);
+Route::post('/authenticate', [AuthenticationController::class, 'authenticateViaAPI']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/verify', fn () => null);
-    Route::post('/revoke', [AuthenticationController::class, 'revoke']);
+    Route::post('/revoke', [AuthenticationController::class, 'revokeViaAPI']);
 });
 
 Route::middleware('auth:web,sanctum')->group(function () {

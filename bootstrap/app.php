@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // For non-authenticated users, redirect to login screen
+        $middleware->redirectGuestsTo('/login');
+
+        // For authenticated users, redirect to home
+        $middleware->redirectUsersTo('/budgets');
+
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);

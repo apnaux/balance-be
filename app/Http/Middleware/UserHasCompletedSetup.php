@@ -17,6 +17,12 @@ class UserHasCompletedSetup
     public function handle(Request $request, Closure $next): Response
     {
         if(empty(Auth::user()->option)){
+            if ($request->header('X-Inertia')) {
+                // abort(401, 'You are not authorized to do this action.');
+                return redirect()->route('/hello')
+                    ->withErrors(['error' => 'You need to set things up first before doing that.']);
+            }
+
             return response()->json([
                 'message' => 'You should run the first time configuration first before you can access other features.'
             ], 401);

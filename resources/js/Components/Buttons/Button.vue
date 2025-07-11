@@ -1,5 +1,5 @@
 <template>
-  <button :type="type" :class="button_colors[color] + ' focus:ring-none focus:outline-none cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2'">
+  <button :type="type" :class="[button_colors[color], 'focus:ring-none focus:outline-none cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2']">
     <slot />
   </button>
 </template>

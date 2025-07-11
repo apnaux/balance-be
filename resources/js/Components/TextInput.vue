@@ -5,16 +5,17 @@
       class="block mb-2 text-sm font-medium text-nord-darker dark:text-nord-lightest"
       >{{ label }}</label
     >
-    <input :type="type" :id="key"
-      :class="[sizes[size], colors[color]]">
+    <input v-model="text" :type="type" :id="key" :placeholder="placeholder" :class="[sizes[size], colors[color]]">
+    <p v-if="error" class="text-warning text-sm mt-2"><i class="ti ti-alert-triangle text-warning"></i> {{ error }}</p>
   </div>
 </template>
 
 <script setup>
-const model = defineModel();
+const text = defineModel();
 const props = defineProps({
   label: String,
   key: String,
+  placeholder: String,
   disabled: Boolean,
   error: {
     type: String,
@@ -40,7 +41,7 @@ const props = defineProps({
 
 const colors = {
   default: 'bg-nord-lightest text-nord-darkest focus:ring-primary focus:border-primary dark:bg-nord-much-darker dark:border-nord-darker dark:placeholder-nord-dark dark:text-nord-light',
-  light_transparent: 'focus:ring-primary focus:border-primary bg-white/25 text-white',
+  light_transparent: 'focus:ring-primary focus:border-primary bg-white/25 text-white placeholder-white/50',
 }
 
 const sizes = {

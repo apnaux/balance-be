@@ -1,29 +1,29 @@
 @layer base {
-  h1, h2, h3, h4, h5, h6, p, i, span {
+  h1, h2, h3, h4, h5, h6, p, i {
     @apply text-gray-900 dark:text-white;
   }
 
   h1 {
-    @apply font-bold text-3xl;
+    @apply font-ag-fett text-3xl;
   }
 
   h2 {
-    @apply font-bold text-2xl;
+    @apply font-ag-fett text-2xl;
   }
 
   h3 {
-    @apply font-bold text-xl;
+    @apply font-ag-fett text-xl;
   }
 
   h4 {
-    @apply font-bold text-lg;
+    @apply font-ag-fett text-lg;
   }
 
   h5 {
-    @apply font-bold text-base;
+    @apply font-ag-fett text-base;
   }
 
   h6 {
-    @apply font-bold text-sm;
+    @apply font-ag-fett text-sm;
   }
 }

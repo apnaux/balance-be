@@ -18,6 +18,10 @@ class CheckIfRegistrationIsAllowed
     {
         $userCount = User::count();
         if($userCount >= 1 && !config('app.registration_allowed')){
+            if ($request->header('X-Inertia')) {
+                return abort(401, 'Registration is not allowed.');
+            }
+
             return response()->json([
                 'message' => 'Registration is not allowed'
             ], 401);
