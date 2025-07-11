@@ -7,6 +7,7 @@
         Thank you for choosing balancé for your transaction tracking needs!
         After this setup, you may now start tracking your transactions freely.
       </p>
+      <Link as="a" href="/revoke" method="post" class="text-sm font-ag-fett text-primary hover:underline w-fit cursor-pointer">Or, just logout for now...</Link>
     </div>
     <form @submit.prevent="submit" class="flex flex-col gap-2 w-[24rem]">
       <TextInput v-model="form.name" :error="errors.name" label="Your Name"
@@ -34,7 +35,7 @@
 <script setup>
 import TextInput from '@/Components/TextInput.vue';
 import OutlineButton from '@/Components/Buttons/OutlineButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, Link } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
 const props = defineProps({

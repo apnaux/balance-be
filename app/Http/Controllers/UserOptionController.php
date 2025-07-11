@@ -17,7 +17,7 @@ class UserOptionController extends Controller
             'first_run' => 'boolean|nullable',
             'name' => 'string|required_if:first_run,1',
             'currency' => 'string|required_if:first_run,1',
-            'cycle_cutoff' => 'integer|max:31|required_if:first_run,1',
+            'cycle_cutoff' => 'integer|min:1|max:31|required_if:first_run,1',
             'allocated_budget' => 'numeric|min:1|required_if:first_run,1',
             'timezone' => 'string|required_if:first_run,1',
         ]);
@@ -43,7 +43,7 @@ class UserOptionController extends Controller
         }
 
         if($request->header('X-Inertia')){
-            return redirect()->route('/budgets');
+            return redirect()->route('budgets.index');
         }
 
         return response()->json([

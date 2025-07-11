@@ -24,7 +24,7 @@ class AuthenticationController extends Controller
         Auth::attempt($request->only('username', 'password'));
         $request->session()->regenerate();
 
-        return redirect()->intended('configuration');
+        return redirect()->intended('hello');
     }
 
     public function authenticate(AuthenticationRequest $request)
@@ -42,6 +42,6 @@ class AuthenticationController extends Controller
     {
         Auth::logout();
 
-        return route('login');
+        return redirect()->route('login');
     }
 }
