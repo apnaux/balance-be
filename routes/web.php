@@ -30,6 +30,10 @@ Route::middleware(['auth:web'])->group(function () {
             Route::get('/', fn () => Inertia::render('Budgets/Index'))->name('index');
         });
 
+        Route::prefix('/accounts')->name('accounts.')->group(function () {
+            Route::get('/', fn () => Inertia::render('Accounts/Index'))->name('index');
+        });
+
         Route::prefix('/transactions')->group(function () {
             //
 

@@ -38,7 +38,8 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'user' => Auth::check() ? Auth::user() : null
+            'user' => Auth::check() ? Auth::user() : null,
+            'route_name' => $request->route()->getName()
         ];
     }
 }

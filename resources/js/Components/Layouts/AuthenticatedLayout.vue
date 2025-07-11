@@ -10,15 +10,15 @@
           </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="m-4 pb-4 border-b border-nord-light/25 border-dashed flex flex-col">
-          <NavButton v-for="nav in sample_nav" :icon="nav.icon" :name="nav.name" />
+        <!-- Navigation | border-b border-nord-light/25 border-dashed -->
+        <div class="m-4 pb-4 flex flex-col">
+          <NavButton v-for="route in routes" :icon="route.icon" :name="route.name" :href="route.href" />
         </div>
 
         <!-- Admin Settings -->
-        <div class="mx-4 mb-4 pb-4 flex flex-col">
+        <!-- <div class="mx-4 mb-4 pb-4 flex flex-col">
           <NavButton v-for="nav in sample_admin_nav" :icon="nav.icon" :name="nav.name" />
-        </div>
+        </div> -->
       </div>
 
       <!-- Logout -->
@@ -28,7 +28,7 @@
       </Link>
     </div>
   </nav>
-  <div class="lg:ml-80 p-4">
+  <div class="lg:ml-80 px-12 pb-12">
     <slot />
   </div>
 </template>
@@ -49,22 +49,24 @@ const sample_admin_nav = [
   },
 ]
 
-const sample_nav = [
+const routes = [
   {
     name: 'Budgets',
-    icon: 'cash'
+    icon: 'cash',
+    href: 'budgets.index'
   },
   {
     name: 'Accounts',
-    icon: 'wallet'
+    icon: 'wallet',
+    href: 'accounts.index'
   },
-  {
-    name: 'Targeted Budgets',
-    icon: 'paperclip'
-  },
-  {
-    name: 'Settings',
-    icon: 'settings'
-  },
+  // {
+  //   name: 'Targeted Budgets',
+  //   icon: 'paperclip'
+  // },
+  // {
+  //   name: 'Settings',
+  //   icon: 'settings'
+  // },
 ]
 </script>
