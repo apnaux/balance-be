@@ -21,33 +21,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revoke', [AuthenticationController::class, 'revokeViaAPI']);
 });
 
-Route::middleware('auth:web,sanctum')->group(function () {
-    Route::prefix('/user')->group(function () {
-        Route::get('/index', fn () => User::with(['option'])->find(Auth::id()));
-        Route::post('/set-options', [AuthenticationController::class, 'setOptions']);
+Route::middleware(['auth'])->name('api.')->group(function () {
+    Route::prefix('/user')->name('users.')->group(function () {
+        Route::get('/index', fn () => User::with(['option'])->find(Auth::id()))->name('get');
+        Route::post('/set-options', [AuthenticationController::class, 'setOptions'])->name('set_options');
     });
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
-        Route::prefix('/transactions')->group(function () {
-            Route::post('/index', [TransactionController::class, 'index']);
-            Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle']);
-            Route::post('/create', [TransactionController::class, 'create']);
+        Route::prefix('/transactions')->name('transactions.')->group(function () {
+            Route::post('/index', [TransactionController::class, 'index'])->name('list');
+            Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle'])->name('per_cycle');
+            Route::post('/create', [TransactionController::class, 'create'])->name('create');
 
             Route::middleware([VerifyIfTransactionIsFromUser::class])->group(function () {
-                Route::post('/update', [TransactionController::class, 'update']);
-                Route::post('/delete', [TransactionController::class, 'delete']);
-                Route::post('/post-transaction', [TransactionController::class, 'postTransaction']);
+                Route::post('/update', [TransactionController::class, 'update'])->name('update');
+                Route::post('/delete', [TransactionController::class, 'delete'])->name('delete');
+                Route::post('/post-transaction', [TransactionController::class, 'postTransaction'])->name('post');
             });
         });
 
-        Route::prefix('/tags')->group(function () {
-            Route::post('/index', [TagController::class, 'index']);
-            Route::post('/create', [TagController::class, 'create']);
+        Route::prefix('/tags')->name('tags.')->group(function () {
+            Route::post('/index', [TagController::class, 'index'])->name('list');
+            Route::post('/create', [TagController::class, 'create'])->name('create');
         });
 
-        Route::prefix('/accounts')->group(function () {
-            Route::get('/index', [AccountController::class, 'index']);
-            Route::post('/create', [AccountController::class, 'create']);
+        Route::prefix('/accounts')->name('accounts.')->group(function () {
+            Route::get('/index', [AccountController::class, 'index'])->name('list');
+            Route::post('/create', [AccountController::class, 'create'])->name('create');
         });
     });
 });

@@ -1,5 +1,5 @@
 <template>
-  <button type="button" class="relative overflow-hidden bg-tertiary p-3 rounded-2xl flex gap-4">
+  <button type="button" class="cursor-pointer overflow-hidden p-3 flex gap-4">
     <div class="w-14 h-14 flex items-center justify-center">
       <i :class="`ti ${icon} text-2xl`"></i>
     </div>

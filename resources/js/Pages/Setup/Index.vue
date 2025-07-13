@@ -11,18 +11,18 @@
     </div>
     <form @submit.prevent="submit" class="flex flex-col gap-2 w-[24rem]">
       <TextInput v-model="form.name" :error="errors.name" label="Your Name"
-        placeholder="John Doe" type="username" key="username" color="light_transparent" />
+        placeholder="John Doe" type="text" key="name" color="transparent" />
       <div class="flex gap-2 border-t dark:border-nord-lightest/50 border-dashed pt-4 mt-4">
         <TextInput v-model="form.allocated_budget" :error="errors.allocated_budget" label="Allocated Budget"
-          placeholder="10000" type="number" key="budget" color="light_transparent" />
+          placeholder="10000" type="number" key="budget" color="transparent" />
         <TextInput v-model="form.cycle_cutoff" :error="errors.cycle_cutoff" label="Cycle Cutoff"
-          placeholder="12" type="number" key="cycle_cutoff" color="light_transparent" />
+          placeholder="12" type="number" key="cycle_cutoff" color="transparent" />
       </div>
       <div class="flex gap-2 border-b dark:border-nord-lightest/50 border-dashed pb-6 mb-2">
         <TextInput v-model="form.currency" :error="errors.currency" label="Preferred Currency"
-          placeholder="USD" type="text" key="currency" color="light_transparent" />
+          placeholder="USD" type="text" key="currency" color="transparent" />
         <TextInput v-model="form.timezone" :error="errors.timezone" label="Your Timezone"
-          placeholder="America/New York" type="text" key="timezone" color="light_transparent" />
+          placeholder="America/New York" type="text" key="timezone" color="transparent" />
       </div>
 
       <OutlineButton type="submit" class="w-full">

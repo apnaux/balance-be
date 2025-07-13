@@ -1,37 +1,30 @@
 <template>
-  <div>
+  <div class="w-full">
     <label
       :for="key"
       class="block mb-2 text-sm font-medium text-nord-darker dark:text-nord-lightest"
-      >{{ label }}</label
-    >
-    <input v-model="text" :type="type" :id="key" :placeholder="placeholder" :class="[sizes[size], colors[color]]">
-    <p v-if="error" class="text-warning text-sm mt-2"><i class="ti ti-alert-triangle text-warning"></i> {{ error }}</p>
+      >{{ label }}</label>
+    <select v-model="model" :id="key"  :class="[sizes[size], colors[color]]">
+      <option disabled selected>Select...</option>
+      <option v-for="option in options" :value="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+    <p v-if="error" class="text-warning text-sm mt-2">
+      <i class="ti ti-alert-triangle text-warning"></i> {{ error }}
+    </p>
   </div>
 </template>
 
 <script setup>
-const text = defineModel();
+const model = defineModel()
 const props = defineProps({
   label: String,
-  key: String,
-  placeholder: String,
-  disabled: Boolean,
-  error: {
-    type: String,
-    default: "",
-  },
-  icon: {
-    type: String,
-    default: "",
-  },
+  options: Array,
+  error: String,
   size: {
     type: String,
     default: "default",
-  },
-  type: {
-    type: String,
-    default: 'text'
   },
   color: {
     type: String,

@@ -27,3 +27,12 @@
     @apply font-ag-fett text-sm;
   }
 }
+
+@layer utilities {
+  .list-card {
+    @apply flex flex-col rounded-xl border border-nord-dark dark:border-nord-lightest bg-nord-lightest/75 dark:bg-nord-lightest/10 [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-dashed [&>*:not(:last-child)]:border-nord-dark dark:[&>*:not(:last-child)]:border-white;
+  }
+  .list-card-x {
+    @apply flex rounded-xl border border-nord-dark dark:border-nord-lightest bg-nord-lightest/75 dark:bg-nord-lightest/10 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-dashed [&>*:not(:last-child)]:border-nord-dark dark:[&>*:not(:last-child)]:border-white;
+  }
+}
