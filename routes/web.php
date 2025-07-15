@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserOptionController;
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\CheckIfTransactionCycleExists;
@@ -30,24 +33,27 @@ Route::middleware(['auth:web'])->group(function () {
             Route::get('/', fn () => Inertia::render('Budgets/Index'))->name('index');
         });
 
-        Route::prefix('/accounts')->name('accounts.')->group(function () {
-            Route::get('/', fn () => Inertia::render('Accounts/Index'))->name('index');
-        });
-
-        Route::prefix('/transactions')->group(function () {
-            //
+        Route::prefix('/transactions')->name('transactions.')->group(function () {
+            Route::post('/list', [TransactionController::class, 'list'])->name('list');
+            Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle'])->name('per_cycle');
+            Route::post('/create', [TransactionController::class, 'create'])->name('create');
 
             Route::middleware([VerifyIfTransactionIsFromUser::class])->group(function () {
-                //
+                Route::post('/update', [TransactionController::class, 'update'])->name('update');
+                Route::post('/delete', [TransactionController::class, 'delete'])->name('delete');
+                Route::post('/post-transaction', [TransactionController::class, 'postTransaction'])->name('post');
             });
         });
 
-        Route::prefix('/tags')->group(function () {
-            //
+        Route::prefix('/tags')->name('tags.')->group(function () {
+            Route::post('/list', [TagController::class, 'list'])->name('list');
+            Route::post('/create', [TagController::class, 'create'])->name('create');
         });
 
-        Route::prefix('/accounts')->group(function () {
-            //
+        Route::prefix('/accounts')->name('accounts.')->group(function () {
+            Route::get('/', fn () => Inertia::render('Accounts/Index'))->name('index');
+            Route::get('/list', [AccountController::class, 'list'])->name('list');
+            Route::post('/create', [AccountController::class, 'create'])->name('create');
         });
     });
 });

@@ -60,26 +60,26 @@ class AccountRequest extends FormRequest
                     $next = Utils::getProperStatementDate($options->timezone, $account->statement_date)->addMonth()->toIso8601String();
 
                     $balances = Transaction::select([
-                    DB::raw("SUM(
-                        CASE WHEN created_at >= '$now' AND created_at <= '$next'
-                        THEN amount ELSE 0 END
-                        ) as statement_balance"),
-                    DB::raw("SUM(
-                        CASE WHEN created_at >= '$previous' AND created_at <= '$now'
-                        THEN amount ELSE 0 END
-                        ) as previous_balance"),
-                    ])
-                    ->where('user_id', Auth::id())
-                    ->whereHasMorph('transactable', [Account::class], function ($query) use ($account) {
-                        $query->where('id', $account->id);
-                    })
-                    ->whereNotNull('posted_at')
-                    ->whereBetween('created_at', [$previous, $next])
-                    ->groupBy('user_id')
-                    ->first();
+                        DB::raw("SUM(
+                            CASE WHEN created_at >= '$now' AND created_at <= '$next'
+                            THEN amount ELSE 0 END
+                            ) as statement_balance"),
+                        DB::raw("SUM(
+                            CASE WHEN created_at >= '$previous' AND created_at <= '$now'
+                            THEN amount ELSE 0 END
+                            ) as previous_balance"),
+                        ])
+                        ->where('user_id', Auth::id())
+                        ->whereHasMorph('transactable', [Account::class], function ($query) use ($account) {
+                            $query->where('id', $account->id);
+                        })
+                        ->whereNotNull('posted_at')
+                        ->whereBetween('created_at', [$previous, $next])
+                        ->groupBy('user_id')
+                        ->first();
 
-                    $account->statement_balance = Utils::getFormattedAmount($balances->statement_balance, $account->currency);
-                    $account->previous_balance = Utils::getFormattedAmount($balances->previous_balance, $account->currency);
+                    $account->statement_balance = Utils::getFormattedAmount($balances->statement_balance ?? 0, $account->currency);
+                    $account->previous_balance = Utils::getFormattedAmount($balances->previous_balance ?? 0, $account->currency);
                     return $account;
                 });
         }

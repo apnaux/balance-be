@@ -4,7 +4,7 @@
       :for="key"
       class="block mb-2 text-sm font-medium text-nord-darker dark:text-nord-lightest"
       >{{ label }}</label>
-    <select v-model="model" :id="key"  :class="[sizes[size], colors[color]]">
+    <select v-model="model" :id="key" :class="[sizes[size], colors[color]]">
       <option disabled selected>Select...</option>
       <option v-for="option in options" :value="option.value">
         {{ option.label }}

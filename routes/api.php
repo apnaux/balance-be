@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revoke', [AuthenticationController::class, 'revokeViaAPI']);
 });
 
-Route::middleware(['auth'])->name('api.')->group(function () {
+Route::middleware(['auth:sanctum'])->name('api.')->group(function () {
     Route::prefix('/user')->name('users.')->group(function () {
         Route::get('/index', fn () => User::with(['option'])->find(Auth::id()))->name('get');
         Route::post('/set-options', [AuthenticationController::class, 'setOptions'])->name('set_options');
@@ -29,7 +29,7 @@ Route::middleware(['auth'])->name('api.')->group(function () {
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
         Route::prefix('/transactions')->name('transactions.')->group(function () {
-            Route::post('/index', [TransactionController::class, 'index'])->name('list');
+            Route::post('/list', [TransactionController::class, 'list'])->name('list');
             Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle'])->name('per_cycle');
             Route::post('/create', [TransactionController::class, 'create'])->name('create');
 
@@ -41,12 +41,12 @@ Route::middleware(['auth'])->name('api.')->group(function () {
         });
 
         Route::prefix('/tags')->name('tags.')->group(function () {
-            Route::post('/index', [TagController::class, 'index'])->name('list');
+            Route::post('/list', [TagController::class, 'list'])->name('list');
             Route::post('/create', [TagController::class, 'create'])->name('create');
         });
 
         Route::prefix('/accounts')->name('accounts.')->group(function () {
-            Route::get('/index', [AccountController::class, 'index'])->name('list');
+            Route::get('/list', [AccountController::class, 'list'])->name('list');
             Route::post('/create', [AccountController::class, 'create'])->name('create');
         });
     });

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
-    public function index(Request $request)
+    public function list(Request $request)
     {
         $tags = Tag::select([
             'id as value',

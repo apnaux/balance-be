@@ -6,12 +6,13 @@
     <div class="flex flex-col leading-4 justify-center text-left">
       <p class="text-sm">{{ name }}</p>
       <p class="font-bold">{{ amount }}</p>
-      <p class="text-xs">{{ "2025-01-01 00:00:00" }}</p>
+      <p class="text-xs">{{ getLocalDtFormat(date) }}</p>
     </div>
   </button>
 </template>
 
 <script setup>
+import { getLocalDtFormat } from "@/Composables/formatters";
 const props = defineProps({
   name: {
     type: String,
@@ -24,7 +25,7 @@ const props = defineProps({
   amount: String,
   date: {
     type: String,
-    default: ""
+    default: "2025-01-01 00:00:00"
   }
 });
 </script>

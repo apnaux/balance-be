@@ -43,7 +43,7 @@ class AuthenticationRequest extends FormRequest
 
     public function createToken()
     {
-        $user = User::where('user_name', $this->username)->first();
+        $user = User::where('username', $this->username)->first();
 
         if (!$user || !Hash::check($this->password, $user->password)) {
             throw ValidationException::withMessages([

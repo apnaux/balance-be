@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
-    public function index(AccountRequest $request)
+    public function list(AccountRequest $request)
     {
         $accounts = $request->retrieve();
         return response()->json($accounts);
