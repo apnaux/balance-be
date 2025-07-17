@@ -12,6 +12,8 @@ use App\Http\Middleware\VerifyIfTransactionIsFromUser;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('/', fn () => redirect()->route('login'));
+
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
     Route::post('/authenticate', [AuthenticationController::class, 'authenticate'])->name('authenticate');

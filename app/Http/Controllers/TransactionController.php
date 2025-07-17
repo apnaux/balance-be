@@ -49,8 +49,8 @@ class TransactionController extends Controller
             ", [Auth::id(), Account::class, Auth::id(), $request->iterations ?? 0])[0];
 
         $dailySpend = Transaction::where('user_id', Auth::id())
-            ->where('created_at', '>=', Carbon::now($options->timezone)->timezone('UTC')->startOfDay())
-            ->where('created_at', '<=', Carbon::now($options->timezone)->timezone('UTC')->endOfDay())
+            ->where('created_at', '>=', Carbon::now($options->timezone)->timezone('UTC')->startOfDay()->toDateTimeString())
+            ->where('created_at', '<=', Carbon::now($options->timezone)->timezone('UTC')->endOfDay()->toDateTimeString())
             ->sum('amount');
 
         return response()->json([
@@ -58,6 +58,7 @@ class TransactionController extends Controller
             'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
             'allocated_budget' => Number::currency(round($cycle->allocated_budget / 100, 2) ?? 0, $options->currency),
             'statement_balance' => Number::currency(round($cycle->statement_balance / 100, 2) ?? 0, $options->currency),
+            'remaining_balance' => Number::currency(round(($cycle->allocated_budget - $cycle->statement_balance) / 100, 2) ?? 0, $options->currency),
             'daily_spend' => Number::currency(round($dailySpend / 100, 2) ?? 0, $options->currency),
             'active_from' => $cycle->active_from,
             'active_until' => $cycle->active_until,
@@ -76,7 +77,7 @@ class TransactionController extends Controller
     public function update(Request $request)
     {
         Transaction::find($request->id)
-            ->update($request->fields);
+            ->update($request->only(['amount', 'name', 'tag_id', 'transactable_id']));
 
         return response()->json([
             'message' => 'The transaction has been updated!'

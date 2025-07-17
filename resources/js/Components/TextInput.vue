@@ -5,7 +5,9 @@
       class="block mb-2 text-sm font-medium text-nord-darker dark:text-nord-lightest"
       >{{ label }}</label
     >
-    <input v-model="text" :type="type" :id="key" :placeholder="placeholder" :class="[sizes[size], colors[color]]">
+
+    <input v-model="text" :type="type" :id="key" :step="step" :placeholder="placeholder" :class="[sizes[size], colors[color]]">
+
     <p v-if="error" class="text-warning text-sm mt-2"><i class="ti ti-alert-triangle text-warning"></i> {{ error }}</p>
   </div>
 </template>
@@ -32,6 +34,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text'
+  },
+  step: {
+    type: String,
+    default: '1'
   },
   color: {
     type: String,

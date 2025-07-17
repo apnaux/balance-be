@@ -35,4 +35,16 @@
   .list-card-x {
     @apply flex rounded-xl border border-nord-dark dark:border-nord-lightest bg-nord-lightest/75 dark:bg-nord-lightest/10 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-dashed [&>*:not(:last-child)]:border-nord-dark dark:[&>*:not(:last-child)]:border-white;
   }
+
+  .list-card-x > button {
+    @apply cursor-pointer disabled:cursor-auto p-3 flex flex-col gap-2 items-center;
+  }
+
+  .list-card > button {
+    @apply cursor-pointer disabled:cursor-auto p-3 flex gap-3 items-center;
+  }
+
+  .list-card > .list-item {
+    @apply overflow-hidden px-6 py-3 flex;
+  }
 }
