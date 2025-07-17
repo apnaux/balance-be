@@ -67,7 +67,7 @@ import TransactionCard from "@/Components/TransactionCard.vue";
 import AddTransaction from "./AddTransaction.vue";
 import ViewTransaction from "./ViewTransaction.vue";
 
-import { onMounted, reactive, ref, shallowReactive, shallowRef, watch } from "vue";
+import { onMounted, reactive, ref, shallowRef, watch } from "vue";
 import axios from "axios";
 
 const state = ref(['list']); // ['list', 'add', 'view', 'edit']
@@ -87,10 +87,6 @@ const form = reactive({
   transactable_type: "Account",
   transactable_id: null,
 });
-
-const changeState = (to) => {
-  state.value = to;
-}
 
 const getTransactionSummary = async () => {
   summary.value = await axios.post(route('transactions.per_cycle'))
@@ -190,8 +186,8 @@ onMounted(async () => {
   await getTags();
 });
 
-watch(state, async (v, o) => {
-  if(v == 'list'){
+watch(() => state.value[0], async (value) => {
+  if(value === 'list'){
     Object.assign(form, {
       id: null,
       amount: null,
