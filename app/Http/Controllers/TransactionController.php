@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helpers\Utils;
 use App\Http\Requests\MakeTransactionRequest;
 use App\Http\Requests\TransactionRequest;
-use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\UserOption;
 use Carbon\Carbon;
@@ -41,12 +40,11 @@ class TransactionController extends Controller
                 FROM user_transaction_cycles AS UTrC
                 LEFT JOIN transactions T ON T.user_id = UtrC.user_id
                     AND T.created_at BETWEEN UTrC.active_from AND UTrC.active_until
-                    AND T.transactable_type = ?
                 WHERE UTRC.user_id = ?
                 GROUP BY UTrC.id
                 ORDER BY UTrC.id DESC
                 LIMIT 1 OFFSET ?
-            ", [Auth::id(), Account::class, Auth::id(), $request->iterations ?? 0])[0];
+            ", [Auth::id(), Auth::id(), $request->iterations ?? 0])[0];
 
         $dailySpend = Transaction::where('user_id', Auth::id())
             ->where('created_at', '>=', Carbon::now($options->timezone)->timezone('UTC')->startOfDay()->toDateTimeString())

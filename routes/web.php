@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TransactionController;
@@ -50,12 +49,6 @@ Route::middleware(['auth:web'])->group(function () {
         Route::prefix('/tags')->name('tags.')->group(function () {
             Route::post('/list', [TagController::class, 'list'])->name('list');
             Route::post('/create', [TagController::class, 'create'])->name('create');
-        });
-
-        Route::prefix('/accounts')->name('accounts.')->group(function () {
-            Route::get('/', fn () => Inertia::render('Accounts/Index'))->name('index');
-            Route::get('/list', [AccountController::class, 'list'])->name('list');
-            Route::post('/create', [AccountController::class, 'create'])->name('create');
         });
     });
 });

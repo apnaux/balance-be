@@ -38,11 +38,6 @@ class Transaction extends Model
         );
     }
 
-    public function transactable() : MorphTo
-    {
-        return $this->morphTo();
-    }
-
     public function tag() : BelongsTo
     {
         return $this->belongsTo(Tag::class);

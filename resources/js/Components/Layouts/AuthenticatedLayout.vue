@@ -67,11 +67,6 @@ const routes = [
     icon: 'home',
     href: 'budgets.index'
   },
-  {
-    name: 'Accounts',
-    icon: 'wallet',
-    href: 'accounts.index'
-  },
   // {
   //   name: 'Targeted Budgets',
   //   icon: 'paperclip'

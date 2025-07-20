@@ -2,9 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Account;
-use App\Models\CustomTag;
-use App\Models\Tag;
 use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +25,11 @@ class TransactionRequest extends FormRequest
     {
         return [
             'tags' => 'array|nullable',
-            'from_recurring' => 'boolean|nullable', // if the transactions list should only include anything from a recurring transaction
+            // 'from_recurring' => 'boolean|nullable', // if the transactions list should only include anything from a recurring transaction
             'is_selection' => 'boolean|nullable', // detemines if the list should only have label and value keys
             'per_page' => 'integer|nullable',
             'search' => 'string|nullable',
-            'transaction_type' => 'array|nullable', // if the transaction type should only include anything from the accounts or goals
+            // 'transaction_type' => 'array|nullable', // if the transaction type should only include anything from the accounts or goals
             'cycle_start_end' => 'array|nullable'
         ];
     }
@@ -55,9 +52,6 @@ class TransactionRequest extends FormRequest
             'transactable'
         ])
         ->where('user_id', Auth::id())
-        ->when(filled($this->from_recurring), function ($query) {
-            $query->whereNotNull('recurring_transaction_id');
-        })
         ->when(filled($this->search), function ($query) {
             $query->where('name', 'like', "%{$this->search}%");
         })
@@ -68,18 +62,6 @@ class TransactionRequest extends FormRequest
         })
         ->when(filled($this->cycle_start_end), function ($query) {
             $query->whereBetween('created_at', $this->cycle_start_end);
-        })
-        ->when(filled($this->transaction_type), function ($query) {
-            $transactables = [];
-            foreach($this->transaction_type as $type){
-                $types = [
-                    'account' => Account::class
-                ];
-
-                $transactables[] = $types[$type];
-            }
-
-            $query->whereHasMorph('transactable', $transactables);
         })
         ->orderByDesc('created_at')
         ->cursorPaginate($this->per_page ?? 10);

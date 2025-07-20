@@ -6,7 +6,7 @@
       >{{ label }}</label>
     <select v-model="model" :id="key" :class="[sizes[size], colors[color]]">
       <option disabled selected>Select...</option>
-      <option v-for="option in options" :value="option.value">
+      <option v-for="option in options" :value="option.value" :class="['text-nord-dark']">
         {{ option.label }}
       </option>
     </select>

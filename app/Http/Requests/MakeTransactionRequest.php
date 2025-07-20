@@ -31,9 +31,7 @@ class MakeTransactionRequest extends FormRequest
             'amount' => 'numeric|required',
             'name' => 'required|string',
             'recurring_transaction_id' => 'integer|exists:recurring_transactions,id|nullable',
-            'tag_id' => 'required|integer|exists:tags,id',
-            'transactable_type' => 'string|in:Account|required',
-            'transactable_id' => 'required|integer'
+            'tag_id' => 'required|integer|exists:tags,id'
         ];
     }
 
@@ -44,25 +42,16 @@ class MakeTransactionRequest extends FormRequest
      */
     public function make()
     {
-        $transactable = "App\Models\\$this->transactable_type"::find($this->transactable_id);
-        if(empty($transactable)){
-            throw ValidationException::withMessages([
-                'transactable_id' => ['The provided account details does not exist.'],
-            ]);
-        }
 
         $options = UserOption::where('user_id', Auth::id())->first();
         $transaction = new Transaction([
             'name' => $this->name,
             'currency' => $options->currency,
             'amount' => $this->amount,
-            'recurring_transaction_id' => $this->recurring_transaction_id ?? null,
-            'tag_id' =>  $this->tag_id,
-            'posted_at' => $transactable->type == 'credit' ? null : Carbon::now('UTC')->toIso8601String()
+            'tag_id' =>  $this->tag_id
         ]);
 
         $transaction->user()->associate(Auth::user());
-        $transaction->transactable()->associate($transactable);
         $transaction->save();
 
         return true;
