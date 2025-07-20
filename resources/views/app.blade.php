@@ -8,7 +8,7 @@
     @vite('resources/js/app.js')
     @inertiaHead
   </head>
-  <body class="dark:bg-nord-darkest">
+  <body class="gruvbox-dark bg-[theme(bg2)]">
     @inertia
   </body>
 </html>

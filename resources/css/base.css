@@ -1,34 +1,35 @@
 @layer components {
   h1, h2, h3, h4, h5, h6, p, i {
-    @apply text-nord-darker dark:text-nord-lightest;
+    color: theme(fg2);
+    @apply text-sm;
   }
 
   h1 {
-    @apply font-ag-fett text-3xl;
+    @apply font-bold text-3xl;
   }
 
   h2 {
-    @apply font-ag-fett text-2xl;
+    @apply font-bold text-2xl;
   }
 
   h3 {
-    @apply font-ag-fett text-xl;
+    @apply font-bold text-xl;
   }
 
   h4 {
-    @apply font-ag-fett text-lg;
+    @apply font-bold text-lg;
   }
 
   h5 {
-    @apply font-ag-fett text-base;
+    @apply font-bold text-base;
   }
 
   h6 {
-    @apply font-ag-fett text-sm;
+    @apply font-bold text-sm;
   }
 }
 
-@layer utilities {
+/* @layer utilities {
   .list-card {
     @apply flex flex-col rounded-xl border border-nord-dark dark:border-nord-lightest bg-nord-lightest/75 dark:bg-nord-lightest/10 [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-dashed [&>*:not(:last-child)]:border-nord-dark dark:[&>*:not(:last-child)]:border-white;
   }
@@ -47,4 +48,4 @@
   .list-card > .list-item {
     @apply overflow-hidden px-6 py-3 flex;
   }
-}
+} */

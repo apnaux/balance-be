@@ -24,6 +24,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth:web'])->group(function () {
+    Route::get('/test', fn () => Inertia::render('TestView'));
     Route::post('/revoke', [AuthenticationController::class, 'revoke'])->name('revoke');
 
     Route::get('/hello', fn () => Inertia::render('Setup/Index'))->middleware([UserHasCompletedSetup::class])->name('hello');
