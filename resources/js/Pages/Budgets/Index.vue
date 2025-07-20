@@ -74,7 +74,6 @@ const state = ref(['list']); // ['list', 'add', 'view', 'edit']
 
 const transactions = shallowRef(null);
 const tags = shallowRef(null);
-const accounts = shallowRef(null);
 const summary = shallowRef(null);
 const errors = ref({});
 const transactionData = shallowRef(null);
@@ -84,8 +83,6 @@ const form = reactive({
   amount: null,
   name: "",
   tag_id: null,
-  transactable_type: "Account",
-  transactable_id: null,
 });
 
 const getTransactionSummary = async () => {
@@ -97,15 +94,6 @@ const getTransactionSummary = async () => {
 
 const getTransactions = async () => {
   transactions.value = await axios.post(route('transactions.list'))
-    .then(res => {
-      return res.data;
-    });
-}
-
-const getAccounts = async () => {
-  accounts.value = await axios.get(route('accounts.list', {
-    selection: true
-  }))
     .then(res => {
       return res.data;
     });
@@ -129,9 +117,7 @@ const handleTransactionEdit = () => {
     id: transactionData.value.id,
     amount: transactionData.value.amount,
     name: transactionData.value.name,
-    tag_id: transactionData.value.tag_id,
-    transactable_type: "Account",
-    transactable_id: transactionData.value.transactable_id,
+    tag_id: transactionData.value.tag_id
   });
 }
 
@@ -182,7 +168,6 @@ const deleteTransaction = async () => {
 onMounted(async () => {
   await getTransactionSummary();
   await getTransactions();
-  await getAccounts();
   await getTags();
 });
 
@@ -192,9 +177,7 @@ watch(() => state.value[0], async (value) => {
       id: null,
       amount: null,
       name: "",
-      tag_id: null,
-      transactable_type: "Account",
-      transactable_id: null,
+      tag_id: null
     });
 
     errors.value = {};

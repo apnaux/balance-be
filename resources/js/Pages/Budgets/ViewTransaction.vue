@@ -23,10 +23,6 @@
         <p>{{ transaction.tag.name }}</p>
       </div>
       <div class="list-item flex-col">
-        <h6>Associated Account</h6>
-        <p>{{ transaction.transactable.name }}</p>
-      </div>
-      <div class="list-item flex-col">
         <h6>Created at</h6>
         <p>{{ getLocalDtFormat(transaction.created_at) }}</p>
       </div>

@@ -24,10 +24,7 @@
 
       <div class="flex flex-col gap-2">
         <TextInput v-model="form.name" :error="errors.name ? errors.name[0] : ''" label="Transaction Name" type="text" key="trn_name" color="transparent" />
-        <div class="flex gap-2 w-full">
-          <Select v-model="form.tag_id" :error="errors.tag_id ? errors.tag_id[0] : ''" :options="tags" label="Tag" key="trn_tag" color="transparent" />
-          <Select v-model="form.transactable_id" :error="errors.transactable_id ? errors.transactable_id[0] : ''" :options="accounts" label="Associated Account" key="trn_account" color="transparent" />
-        </div>
+        <Select v-model="form.tag_id" :error="errors.tag_id ? errors.tag_id[0] : ''" :options="tags" label="Tag" key="trn_tag" color="transparent" />
       </div>
     </div>
 

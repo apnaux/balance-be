@@ -30,7 +30,6 @@ class MakeTransactionRequest extends FormRequest
             'currency' => 'string|nullable',
             'amount' => 'numeric|required',
             'name' => 'required|string',
-            'recurring_transaction_id' => 'integer|exists:recurring_transactions,id|nullable',
             'tag_id' => 'required|integer|exists:tags,id'
         ];
     }

@@ -48,8 +48,7 @@ class TransactionRequest extends FormRequest
             ]);
         })
         ->with([
-            'tag',
-            'transactable'
+            'tag'
         ])
         ->where('user_id', Auth::id())
         ->when(filled($this->search), function ($query) {
