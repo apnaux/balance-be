@@ -14,9 +14,10 @@ return new class extends Migration
     {
         Schema::create('user_options', function (Blueprint $table) {
             $table->foreignIdFor(User::class, 'user_id')->unique();
-            $table->string('currency');
-            $table->integer('cycle_cutoff');
-            $table->integer('allocated_budget');
+            $table->string('currency')->default('PHP');
+            $table->integer('cycle_cutoff')->default(1);
+            $table->integer('total_income')->default(0);
+            $table->integer('to_save')->default(0);
             $table->string('timezone')->nullable();
             $table->timestamps();
         });

@@ -26,13 +26,13 @@ class TransactionController extends Controller
     public function transactionsPerCycle(Request $request)
     {
         $request->validate([
-            'iterations' => 'integer|min:0'
+            'iterations' => 'integer|min:0|default:0'
         ]);
 
         $options = UserOption::where('user_id', Auth::id())->first();
         $cycle = DB::select("
                 SELECT
-                    UTrC.*,
+                    UTrC.total_income - UTrC.to_save AS 'allocated_budget',
                     COALESCE(SUM(T.amount), 0) AS 'statement_balance',
                     (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts',
                     UTrC.active_from,
@@ -46,9 +46,10 @@ class TransactionController extends Controller
                 LIMIT 1 OFFSET ?
             ", [Auth::id(), Auth::id(), $request->iterations ?? 0])[0];
 
+        $now = Carbon::now($options->timezone)->timezone('UTC');
         $dailySpend = Transaction::where('user_id', Auth::id())
-            ->where('created_at', '>=', Carbon::now($options->timezone)->timezone('UTC')->startOfDay()->toDateTimeString())
-            ->where('created_at', '<=', Carbon::now($options->timezone)->timezone('UTC')->endOfDay()->toDateTimeString())
+            ->where('created_at', '>=', $now->startOfDay()->toDateTimeString())
+            ->where('created_at', '<=', $now->endOfDay()->toDateTimeString())
             ->sum('amount');
 
         return response()->json([
@@ -91,7 +92,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function postTransaction(Request $request)
+    public function post(Request $request)
     {
         $transaction = Transaction::find($request->id);
         if(filled($transaction->posted_at)){

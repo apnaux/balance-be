@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('user_transaction_cycles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->integer('allocated_budget');
+            $table->string('currency')->default('PHP');
+            $table->integer('total_income')->default(0);
+            $table->integer('to_save')->default(0);
             $table->timestamp('active_from')->index('transaction_active_time_start_date');
             $table->timestamp('active_until')->index('transaction_active_time_end_date');
         });
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_cycles');
+        Schema::dropIfExists('user_transaction_cycles');
     }
 };

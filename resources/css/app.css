@@ -1,18 +1,5 @@
 @import 'tailwindcss';
-@import "flowbite/src/themes/default";
-
 @import './theme.css';
-@import './base.css';
-@import './nord.css';
-
-@plugin "flowbite/plugin";
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@source "../node_modules/flowbite";
 
 @font-face {
 	font-family: "Apfel Grotezk Mittel";
@@ -27,11 +14,4 @@
 @font-face {
 	font-family: "Apfel Grotezk Satt";
 	src: url("/public/fonts/ApfelGrotezk/ApfelGrotezk-Satt.woff2") format('woff2');
-}
-
-@font-face {
-    font-family: 'Fira Code';
-    font-style: normal;
-    font-weight: 200 900;
-    src: url('/public/fonts/FiraCode/FiraCode-VariableFont_wght.ttf');
 }

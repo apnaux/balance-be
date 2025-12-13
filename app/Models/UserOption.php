@@ -14,12 +14,13 @@ class UserOption extends Model
     protected $fillable = [
         'currency',
         'cycle_cutoff',
-        'allocated_budget',
+        'total_income',
+        'to_save',
         'timezone'
     ];
 
     protected $appends = [
-        'formatted_allocated_budget'
+        'formatted_total_income'
     ];
 
     public function allocatedBudget() : Attribute
@@ -30,10 +31,17 @@ class UserOption extends Model
         );
     }
 
-    public function formattedAllocatedBudget() : Attribute
+    public function formattedTotalIncome() : Attribute
     {
         return Attribute::make(
-            get: fn () => Number::currency($this->allocated_budget, $this->currency)
+            get: fn () => Number::currency($this->total_income / 100, $this->currency)
+        );
+    }
+
+    public function formattedToSave() : Attribute
+    {
+        return Attribute::make(
+            get: fn () => Number::currency($this->to_save / 100, $this->currency)
         );
     }
 

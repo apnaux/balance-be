@@ -27,11 +27,8 @@ class CheckIfTransactionCycleExists
             ->whereRaw("'$now' BETWEEN active_from AND active_until")
             ->first();
 
-        Log::info('Current transaction cycle: ' . $currentTransactionCycle);
-
         if(empty($currentTransactionCycle)){
             Log::debug('No current transaction cycle found');
-
             $transactionCycles = UserTransactionCycle::where('user_id', $request->user()->id)->orderByDesc('active_from')->get();
             $start = Utils::getProperStatementDate($options->timezone, $options->cycle_cutoff);
 
@@ -44,13 +41,8 @@ class CheckIfTransactionCycleExists
                 // then create new transaction cycles for them
                 $prevEnd = Carbon::parse($transactionCycles[0]->active_until, 'UTC');
                 $dates = $this->createStatementDateArray($prevEnd, $start->addMonth());
-
-                Log::debug("Dates:", $dates);
-
                 for($i = 0; $i < count($dates) - 1; $i++){
-                    Log::debug($dates[$i]);
-                    Log::debug($dates[$i + 1]);
-                    $this->createTransactionCycle($request->user()->id, $options->currency, $options->allocated_budget, $dates[$i], $dates[$i + 1]);
+                    $this->createTransactionCycle($request->user()->id, $options, $dates[$i], $dates[$i + 1]);
                 }
             }
         }
@@ -67,15 +59,16 @@ class CheckIfTransactionCycleExists
      * @param string $endDateTime
      * @return bool
      */
-    public function createTransactionCycle(int $userID, string $currency, float $budget, string $startDateTime, string $endDateTime)
+    public function createTransactionCycle(int $userID, object $option, string $startDateTime, string $endDateTime)
     {
-        $transactionCycle = new UserTransactionCycle();
-        $transactionCycle->user_id = $userID;
-        $transactionCycle->currency = $currency;
-        $transactionCycle->allocated_budget = $budget;
-        $transactionCycle->active_from = $startDateTime;
-        $transactionCycle->active_until = $endDateTime;
-        $transactionCycle->save();
+        UserTransactionCycle::create([
+            'user_id' => $userID,
+            'currency' => $option->currency,
+            'total_income' => $option->total_income,
+            'to_save' => $option->to_save,
+            'active_from' => $startDateTime,
+            'active_until' => $endDateTime
+        ]);
 
         return true;
     }

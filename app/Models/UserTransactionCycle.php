@@ -14,7 +14,8 @@ class UserTransactionCycle extends Model
     protected $fillable = [
         'user_id',
         'currency',
-        'allocated_budget',
+        'total_income',
+        'to_save',
         'active_from',
         'active_until'
     ];

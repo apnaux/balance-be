@@ -18,7 +18,8 @@ class UserOptionController extends Controller
             'name' => 'string|required_if:first_run,1',
             'currency' => 'string|required_if:first_run,1',
             'cycle_cutoff' => 'integer|min:1|max:31|required_if:first_run,1',
-            'allocated_budget' => 'numeric|min:1|required_if:first_run,1',
+            'total_income' => 'numeric|min:1|required_if:first_run,1',
+            'to_save' => 'numeric|min:0|required_if:first_run,1',
             'timezone' => 'string|required_if:first_run,1',
         ]);
 
@@ -38,12 +39,8 @@ class UserOptionController extends Controller
             );
         }
 
-        if(filled($latestCycle) && filled($request->allocated_budget)) {
-            $latestCycle->update(['allocated_budget' => $request->allocated_budget]);
-        }
-
         if($request->header('X-Inertia')){
-            return redirect()->route('budgets.index');
+            return redirect()->route('home');
         }
 
         return response()->json([
