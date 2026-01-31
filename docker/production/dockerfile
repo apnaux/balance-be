@@ -1,0 +1,17 @@
+# -----------------------------------
+# Build Front-end
+# -----------------------------------
+FROM node:24.11.1-alpine3.22 AS frontend-builder
+WORKDIR /app
+
+# Copy Package File and do an install
+COPY ./package.json .
+RUN npm install
+
+# Copy all files and do a build step
+COPY . .
+RUN npm run build
+
+# -----------------------------------
+# Install required packages and copy configuration files
+# -----------------------------------

@@ -1,0 +1,61 @@
+# -----------------------------------
+# Build Application
+# -----------------------------------
+FROM php:8.5.2-fpm-alpine3.23
+
+RUN apk update && apk add --no-cache \
+  bash \
+  git \
+  curl \
+  zip \
+  unzip \
+  libpng-dev \
+  libjpeg-turbo-dev \
+  libfreetype-dev \
+  oniguruma-dev \
+  libxml2-dev \
+  sqlite-dev \
+  build-base \
+  caddy \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+
+
+# Navigate to preferred workdir and copy source code
+WORKDIR /var/www
+COPY . .
+
+# Install composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
+
+# Copy all required files
+COPY docker/common/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/common/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/development/caddy/Caddyfile /etc/caddy/Caddyfile
+
+# Copy entrypoint file
+COPY docker/development/entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Create logging and framework cache folders to
+# ensure that they will inherit file permissions
+RUN mkdir -p /var/log/php-fpm && \
+    mkdir -p /var/www/storage/logs && \
+    mkdir -p /var/www/storage/framework/cache && \
+    mkdir -p /var/www/storage/framework/sessions && \
+    mkdir -p /var/www/storage/framework/views && \
+    mkdir -p /var/www/storage/app/public
+
+# Change file permissions
+RUN chown -R caddy:caddy /var/www/ \
+    chmod -R 775 /var/www/boostrap/cache \
+    chmod -R 775 /var/www/storage
+
+# Change user to caddy
+USER caddy
+
+# Expose port 80
+EXPOSE 80
+
+ENTRYPOINT [ "entrypoint.sh" ]
