@@ -19,6 +19,6 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.0.14",
         "@tabler/icons-webfont": "^3.34.0",
-        "reka-ui": "^2.6.1"
+        "flowbite": "^4.0.1"
     }
 }

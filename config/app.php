@@ -110,13 +110,13 @@ return [
     | Allow Multiple Registrations
     |--------------------------------------------------------------------------
     |
-    | These option determine if the app should allow multiple registrations
+    | This option determines if the app should allow multiple registrations
     | If this is off, the application will only allow one account to
     | be registered
     |
     */
 
-    'allow_registration' => env('APP_ALLOW_MULTIPLE_REGISTRATION', true),
+    'allow_registration' => env('APP_ALLOW_MULTIPLE_REGISTRATIONS', true),
 
     /*
     |--------------------------------------------------------------------------

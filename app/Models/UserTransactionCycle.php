@@ -21,10 +21,10 @@ class UserTransactionCycle extends Model
     ];
 
     protected $appends = [
-        'formatted_allocated_budget'
+        'allocated_budget'
     ];
 
-    public function allocatedBudget() : Attribute
+    public function totalIncome() : Attribute
     {
         return Attribute::make(
             get: fn ($value) => round($value / 100, 2),
@@ -32,10 +32,18 @@ class UserTransactionCycle extends Model
         );
     }
 
-    public function formattedAllocatedBudget() : Attribute
+    public function toSave() : Attribute
     {
         return Attribute::make(
-            get: fn () => Number::currency($this->allocated_budget, $this->currency)
+            get: fn ($value) => round($value / 100, 2),
+            set: fn ($value) => $value * 100
+        );
+    }
+
+    public function allocatedBudget() : Attribute
+    {
+        return Attribute::make(
+            get: fn () => round(($this->total_income - $this->to_save) / 100)
         );
     }
 

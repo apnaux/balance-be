@@ -13,7 +13,7 @@ class AuthenticationController extends Controller
     {
         $request->validate([
             'username' => 'string|max:8|required|unique:users,username',
-            'password' => 'min:8|required|confirmed',
+            'password' => 'min:8|required',
         ]);
 
         User::create([
@@ -46,7 +46,7 @@ class AuthenticationController extends Controller
         }
 
         if($request->authenticate()){
-            return redirect()->intended('/budgets');
+            return redirect()->intended('/hello');
         }
 
         return back()->withErrors([

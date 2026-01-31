@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/login');
 
         // For authenticated users, redirect to home
-        $middleware->redirectUsersTo('/budgets');
+        $middleware->redirectUsersTo('/home');
 
         $middleware->web(append: [
             HandleInertiaRequests::class,

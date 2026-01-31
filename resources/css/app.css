@@ -1,4 +1,11 @@
 @import 'tailwindcss';
+
+/** Flowbite */
+@import "flowbite/src/themes/default";
+@custom-variant dark (&:where(.dark, .dark *));
+@plugin "flowbite/plugin";
+@source "../../node_modules/flowbite";
+
 @import './theme.css';
 
 @font-face {
@@ -14,4 +21,11 @@
 @font-face {
 	font-family: "Apfel Grotezk Satt";
 	src: url("/public/fonts/ApfelGrotezk/ApfelGrotezk-Satt.woff2") format('woff2');
+}
+
+@font-face {
+    font-family: 'Fira Code';
+    font-style: normal;
+    font-weight: 200 900;
+    src: url('/public/fonts/FiraCode/FiraCode-VariableFont_wght.ttf');
 }

@@ -33,7 +33,7 @@ Route::middleware(['auth:web,sanctuum'])->name('api.')->group(function () {
             Route::patch('/', [TransactionController::class, 'update'])->name('action');
             Route::delete('/', [TransactionController::class, 'delete'])->name('action');
             Route::post('/post', [TransactionController::class, 'post'])->name('post');
-            Route::post('/per-cycle', [TransactionController::class, 'transactionsPerCycle'])->name('per_cycle');
+            Route::post('/per-cycle', [TransactionController::class, 'perCycleData'])->name('per_cycle');
         });
 
         Route::prefix('/tags')->name('tags')->group(function () {

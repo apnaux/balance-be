@@ -18,12 +18,7 @@ class UserOption extends Model
         'to_save',
         'timezone'
     ];
-
-    protected $appends = [
-        'formatted_total_income'
-    ];
-
-    public function allocatedBudget() : Attribute
+    public function totalIncome() : Attribute
     {
         return Attribute::make(
             get: fn ($value) => round($value / 100, 2),
@@ -31,17 +26,11 @@ class UserOption extends Model
         );
     }
 
-    public function formattedTotalIncome() : Attribute
+    public function toSave() : Attribute
     {
         return Attribute::make(
-            get: fn () => Number::currency($this->total_income / 100, $this->currency)
-        );
-    }
-
-    public function formattedToSave() : Attribute
-    {
-        return Attribute::make(
-            get: fn () => Number::currency($this->to_save / 100, $this->currency)
+            get: fn ($value) => round($value / 100, 2),
+            set: fn ($value) => $value * 100
         );
     }
 

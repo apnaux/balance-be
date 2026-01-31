@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\UserOptionController;
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\CheckIfTransactionCycleExists;
 use App\Http\Middleware\UserHasCompletedSetup;
@@ -21,10 +22,12 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/hello', fn () => Inertia::render('Setup'))->middleware([UserHasCompletedSetup::class])->name('hello');
-    Route::post('/revoke', [AuthenticationController::class, 'revoke'])->name('revoke');
+    Route::post('/hello', [UserOptionController::class, 'setOptions'])->middleware([UserHasCompletedSetup::class])->name('hello');
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
-        // Route::get('/home', fn () => Inertia::render('Budgets/Index'))->name('home');
+        Route::get('/home', fn () => Inertia::render('Dashboard'))->name('home');
         // Route::get('/tags', fn () => Inertia::render(component: 'Tags/Index'));
     });
+
+    Route::post('/revoke', [AuthenticationController::class, 'revoke'])->name('revoke');
 });

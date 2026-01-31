@@ -17,14 +17,14 @@ class CheckIfRegistrationIsAllowed
     public function handle(Request $request, Closure $next): Response
     {
         $userCount = User::count();
-        if($userCount >= 1 && !config('app.registration_allowed')){
+        if ($userCount >= 1 && !config('app.allow_registration')) {
             if ($request->header('X-Inertia')) {
-                return abort(401, 'Registration is not allowed.');
+                abort(404, 'Registration is not allowed.');
             }
 
             return response()->json([
                 'message' => 'Registration is not allowed'
-            ], 401);
+            ], 404);
         }
 
         return $next($request);

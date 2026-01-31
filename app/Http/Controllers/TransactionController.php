@@ -23,7 +23,7 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
-    public function transactionsPerCycle(Request $request)
+    public function perCycleData(Request $request)
     {
         $request->validate([
             'iterations' => 'integer|min:0|default:0'
@@ -32,7 +32,7 @@ class TransactionController extends Controller
         $options = UserOption::where('user_id', Auth::id())->first();
         $cycle = DB::select("
                 SELECT
-                    UTrC.total_income - UTrC.to_save AS 'allocated_budget',
+                    (UTrC.total_income - UTrC.to_save) AS 'allocated_budget',
                     COALESCE(SUM(T.amount), 0) AS 'statement_balance',
                     (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts',
                     UTrC.active_from,
