@@ -30,11 +30,13 @@ class AuthenticationController extends Controller
         Auth::attempt($request->only('username', 'password'));
         $request->session()->regenerate();
 
-        return redirect()->intended('hello');
+        return redirect()->intended('/hello');
     }
 
     public function authenticate(AuthenticationRequest $request)
     {
+        // dd(request()->headers->all());
+
         if (str_contains($request->path(), 'api')) {
             $token = $request->createToken();
             $user = Auth::user();
@@ -45,8 +47,9 @@ class AuthenticationController extends Controller
             ]);
         }
 
-        if($request->authenticate()){
-            return redirect()->intended('/hello');
+        if ($request->authenticate()) {
+            return redirect()->intended('/home');
+            // return Inertia::location(route('home'));
         }
 
         return back()->withErrors([

@@ -17,7 +17,7 @@ class UserHasCompletedSetup
     public function handle(Request $request, Closure $next): Response
     {
         $options = Auth::user()->option;
-        if (empty($options) && $request->route()->getName() != 'hello') {
+        if (empty($options) && $request->route()->getName() != 'hello.show') {
             if ($request->header('Content-Type') == 'application/json') {
                 return response()->json([
                     'message' => 'You should run the first time configuration first before you can access other features.'
@@ -25,10 +25,10 @@ class UserHasCompletedSetup
             }
 
             // abort(401, 'You are not authorized to do this action.');
-            return redirect()->route('hello')
+            return redirect()->route('hello.show')
                 ->withErrors(['error' => 'You need to set things up first before doing that.']);
         } elseif (filled($options)) {
-            if ($request->route()->getName() == 'hello') {
+            if ($request->route()->getName() == 'hello.show') {
                 return redirect()->intended('/home');
             }
         }

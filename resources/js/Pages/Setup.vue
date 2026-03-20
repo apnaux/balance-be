@@ -42,7 +42,7 @@ const form = useForm({
 
 const submit = async () => {
   form.post("/hello", {
-    preserveState: true,
+    // preserveState: true,
     onSuccess: () => {
       console.log("Successfully logged-in!");
     },

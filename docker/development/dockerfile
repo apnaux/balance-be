@@ -1,9 +1,9 @@
 # -----------------------------------
 # Build Application
 # -----------------------------------
-FROM php:8.5.2-fpm-alpine3.23
+FROM php:8.4-fpm-alpine3.23
 
-RUN apk update && apk add --no-cache \
+RUN apk add --no-cache \
   bash \
   git \
   curl \
@@ -11,23 +11,28 @@ RUN apk update && apk add --no-cache \
   unzip \
   libpng-dev \
   libjpeg-turbo-dev \
-  libfreetype-dev \
+  freetype-dev \
   oniguruma-dev \
   libxml2-dev \
   sqlite-dev \
+  mariadb-dev \
   build-base \
   caddy \
-  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  nodejs \
+  npm \
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
   && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
-
 # Navigate to preferred workdir and copy source code
-WORKDIR /var/www
+WORKDIR /var/www/html
 COPY . .
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
+
+# install npm packages for front-end
+RUN npm install && npm run build
 
 # Copy all required files
 COPY docker/common/php/php.ini /usr/local/etc/php/php.ini
@@ -38,24 +43,42 @@ COPY docker/development/caddy/Caddyfile /etc/caddy/Caddyfile
 COPY docker/development/entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+# Validate Caddyfile
+RUN caddy validate -c /etc/caddy/Caddyfile
+
+# Set default user and group
+ENV UID=1000
+ENV GID=1000
+
+# Create appuser and add caddy user to the group
+RUN addgroup -g $GID appuser \
+  && adduser -D -u $UID -G appuser appuser  \
+  && adduser caddy appuser
+
 # Create logging and framework cache folders to
 # ensure that they will inherit file permissions
 RUN mkdir -p /var/log/php-fpm && \
-    mkdir -p /var/www/storage/logs && \
-    mkdir -p /var/www/storage/framework/cache && \
-    mkdir -p /var/www/storage/framework/sessions && \
-    mkdir -p /var/www/storage/framework/views && \
-    mkdir -p /var/www/storage/app/public
+  mkdir -p /usr/local/var/log/php-fpm && \
+  mkdir -p /usr/local/var/run/php-fpm && \
+  mkdir -p /var/www/html/storage/logs && \
+  mkdir -p /var/www/html/storage/framework/cache && \
+  mkdir -p /var/www/html/storage/framework/sessions && \
+  mkdir -p /var/www/html/storage/framework/views && \
+  mkdir -p /var/www/html/storage/app/public
 
 # Change file permissions
-RUN chown -R caddy:caddy /var/www/ \
-    chmod -R 775 /var/www/boostrap/cache \
-    chmod -R 775 /var/www/storage
-
-# Change user to caddy
-USER caddy
+RUN chown -R appuser:appuser /var/www/html && \
+    chown -R appuser:appuser /var/www/html/storage && \
+    chown -R appuser:appuser /var/www/html/bootstrap/cache && \
+    chown -R appuser:appuser /var/log/php-fpm && \
+    chown -R appuser:appuser /usr/local/var/log/php-fpm && \
+    chown -R appuser:appuser /usr/local/var/run/php-fpm && \
+    chmod -R 775 /var/www/html/
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 443
 
-ENTRYPOINT [ "entrypoint.sh" ]
+# Change to non-root user
+USER appuser
+
+ENTRYPOINT [ "sh", "entrypoint.sh" ]

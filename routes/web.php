@@ -11,21 +11,22 @@ use Inertia\Inertia;
 Route::get('/', fn () => redirect()->route('login'));
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
-    Route::post('/authenticate', [AuthenticationController::class, 'authenticate'])->name('authenticate');
+    Route::inertia('/login', 'Auth/Login')->name('login');
+    Route::post('/authenticate', [AuthenticationController::class, 'authenticate'])->name('login.set');
 
     Route::middleware([CheckIfRegistrationIsAllowed::class])->group(function () {
-        Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
+        Route::inertia('/register', 'Auth/Register')->name('register');
         Route::post('/register/create', [AuthenticationController::class, 'register'])->name('register.create');
     });
 });
 
-Route::middleware(['auth:web'])->group(function () {
-    Route::get('/hello', fn () => Inertia::render('Setup'))->middleware([UserHasCompletedSetup::class])->name('hello');
-    Route::post('/hello', [UserOptionController::class, 'setOptions'])->middleware([UserHasCompletedSetup::class])->name('hello');
+Route::middleware(['auth'])->group(function () {
+    Route::inertia('/hello', 'Setup')->middleware([UserHasCompletedSetup::class])->name('hello.show');
+    Route::post('/hello', [UserOptionController::class, 'setOptions'])->middleware([UserHasCompletedSetup::class])->name('hello.store');
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
-        Route::get('/home', fn () => Inertia::render('Dashboard'))->name('home');
+        Route::inertia('/home', 'Dashboard')->name('home');
+        Route::get('/test', fn () => redirect()->route('home'))->name('testing');
         // Route::get('/tags', fn () => Inertia::render(component: 'Tags/Index'));
     });
 

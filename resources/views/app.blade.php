@@ -6,7 +6,6 @@
     @routes
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
-    @vite('node_modules/flowbite/dist/flowbite.min.js')
     @inertiaHead
   </head>
   <body class="bg-dark-backdrop">

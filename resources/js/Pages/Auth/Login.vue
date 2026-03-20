@@ -1,7 +1,7 @@
 <template>
   <div class="w-svw h-svh flex items-center justify-center">
     <div class="w-full max-w-sm bg-neutral-primary-soft p-6 border border-default rounded-base shadow-xs">
-      <form @submit.prevent="submit">
+      <form @submit.prevent="form.post('/authenticate')">
         <h5 class="text-xl font-semibold text-heading mb-6">Sign in to our platform</h5>
         <div class="mb-4">
           <label for="username" class="block mb-2.5 text-sm font-medium text-heading">Your username</label>
@@ -30,13 +30,4 @@ const form = useForm({
   username: "",
   password: ""
 });
-
-const submit = async () => {
-  form.post("/authenticate", {
-    preserveState: true,
-    onSuccess: () => {
-      console.log("Successfully logged-in!");
-    },
-  });
-};
 </script>

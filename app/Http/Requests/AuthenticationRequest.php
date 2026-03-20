@@ -33,12 +33,7 @@ class AuthenticationRequest extends FormRequest
 
     public function authenticate()
     {
-        if(Auth::attempt($this->all())){
-            $this->session()->regenerate();
-            return true;
-        }
-
-        return false;
+        return Auth::attempt(['username' => $this->username, 'password' => $this->password]);
     }
 
     public function createToken()

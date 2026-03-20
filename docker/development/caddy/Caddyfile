@@ -1,12 +1,29 @@
 :80 {
-  root * /var/www/public
-  php_fastcgi unix//var/run/php-fpm/www.sock
-  encode zstd gzip
-  file_server
+    root * /var/www/html/public
 
-  @vite {
-    path /vite/*
-  }
+    # Laravel/PHP
+    php_fastcgi unix//usr/local/var/run/php-fpm/www.sock {
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+    }
 
-  reverse_proxy @vite vite:5173
+    # Clean URLs
+    try_files {path} {path}/ /index.php?{query}
+
+    # Static file caching
+    @static {
+        path_regexp static "\.(?:ico|css|js|gif|jpg|jpeg|png|svg|woff2?)$"
+    }
+    header @static Cache-Control max-age=604800
+
+    # Security headers
+    header {
+        X-Frame-Options SAMEORIGIN
+        X-Content-Type-Options nosniff
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    encode zstd gzip
+    file_server
 }

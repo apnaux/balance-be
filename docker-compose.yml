@@ -1,0 +1,73 @@
+networks:
+  balance-dev:
+    name: balance-dev
+    external: false
+
+services:
+  balance-dev:
+    container_name: balance-dev
+    build:
+      context: .
+      dockerfile: docker/development/dockerfile
+    env_file:
+      - .env
+    develop:
+      watch:
+        - path: ./composer.lock
+          action: sync
+          target: /var/www/html/composer.lock
+        - path: ./app
+          action: sync
+          target: /var/www/html/app
+        - path: ./config
+          action: sync
+          target: /var/www/html/config
+        - path: ./app
+          action: sync
+          target: /var/www/html/database
+        - path: ./resources
+          action: sync
+          target: /var/www/html/resources
+        - path: ./routes
+          action: sync
+          target: /var/www/html/routes
+        - path: ./tests
+          action: sync
+          target: /var/www/html/tests
+        - path: ./composer.json
+          action: rebuild
+        - path: ./vite.config.js
+          action: sync
+          target: /var/www/html/vite.config.js
+    volumes:
+      - ./storage/:/var/www/html/storage/
+    ports:
+      - "9092:80"
+      - "5173:5173"
+    networks:
+      - balance-dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # dev-frontend:
+  #   container_name: balance-dev-frontend
+  #   build:
+  #     context: .
+  #     dockerfile: docker/development/vite/dockerfile
+  #   env_file: .env
+  #   develop:
+  #     watch:
+  #       - path: ./package-lock.json
+  #         action: sync
+  #         target: /var/www/html/package-lock.json
+  #       - path: ./resources
+  #         action: sync
+  #         target: /var/www/html/resources
+  #       - path: ./vite.config.js
+  #         action: rebuild
+  #       - path: ./package.json
+  #         action: rebuild
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   depends_on:
+  #     - dev-backend

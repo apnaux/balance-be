@@ -77,13 +77,13 @@
         <span class="self-center text-lg text-heading font-semibold whitespace-nowrap">Flowbite</span>
       </a>
       <ul class="space-y-2 font-medium">
-        <li v-for="route in routes">
-          <a href="#"
+        <template v-for="route in routes">
+          <Link :href="route.route"
             class="flex items-center px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
             <i :class="`ti ${route.icon} text-xl transition duration-75 group-hover:text-fg-brand`"></i>
             <span class="ms-3 text-sm">{{ route.name }}</span>
-          </a>
-        </li>
+          </Link>
+        </template>
         <li class="border-t border-default-medium pt-1.5">
           <a href="#"
             class="flex items-center px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
@@ -110,17 +110,17 @@ const routes = [
   {
     name: 'Dashboard',
     icon: 'ti-layout-dashboard',
-    route: ''
+    route: '/test'
   },
   {
     name: 'Transactions',
     icon: 'ti-cash-register',
-    route: ''
+    route: '/test'
   },
   {
     name: 'Budgets',
     icon: 'ti-wallet',
-    route: ''
+    route: '/test'
   }
 ];
 </script>
