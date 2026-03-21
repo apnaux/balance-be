@@ -9,6 +9,7 @@ RUN apk add --no-cache \
   curl \
   zip \
   unzip \
+  icu-dev \
   libpng-dev \
   libjpeg-turbo-dev \
   freetype-dev \
@@ -21,7 +22,7 @@ RUN apk add --no-cache \
   nodejs \
   npm \
   && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-  && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+  && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd intl
 
 # Navigate to preferred workdir and copy source code
 WORKDIR /var/www/html

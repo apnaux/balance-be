@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,16 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->string('name')->nullable();
+            $table->foreignIdFor(User::class, 'user_id');
+            $table->string('name');
+            $table->enum('type', ['credit', 'debit']);
             $table->string('currency')->default('PHP');
-            $table->unsignedBigInteger('amount');
-            $table->unsignedBigInteger('posted_amount')->nullable();
-            $table->foreignId('tag_id');
-            $table->timestamp('transacted_at');
-            $table->timestamp('posted_at')->nullable();
+            $table->unsignedBigInteger('limit')->nullable();
+            $table->date('statement_date')->nullable();
+            $table->date('due_date')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('accounts');
     }
 };

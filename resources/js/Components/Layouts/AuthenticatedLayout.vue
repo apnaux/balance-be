@@ -80,12 +80,13 @@
         <template v-for="route in routes">
           <Link :href="route.route"
             class="flex items-center px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
-            <i :class="`ti ${route.icon} text-xl transition duration-75 group-hover:text-fg-brand`"></i>
+            <component :is="route.icon" :size="20" class="transition duration-75 group-hover:text-fg-brand" />
+            <!-- <i :class="`ti ${route.icon} text-xl `"></i> -->
             <span class="ms-3 text-sm">{{ route.name }}</span>
           </Link>
         </template>
         <li class="border-t border-default-medium pt-1.5">
-          <a href="#"
+          <a @click="showAddTransaction = true"
             class="flex items-center px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
             <i :class="`ti ti-plus text-xl transition duration-75 group-hover:text-fg-brand`"></i>
             <span class="ms-3 text-sm">Add new transaction</span>
@@ -99,28 +100,38 @@
   <div class="p-4 sm:ml-64 mt-14">
     <slot></slot>
   </div>
+
+  <!-- Add Transactions -->
+  <AddTransactionModal v-model:show="showAddTransaction" @reload="emits('reload')"/>
 </template>
 
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
 import Dropdown from '../Dropdown.vue';
+import InputModal from '../Modal/InputModal.vue';
+import AddTransactionModal from './Forms/AddTransactionModal.vue';
 
+import { Link, usePage } from '@inertiajs/vue3';
+import { IconLayoutDashboard, IconCashRegister, IconWallet } from '@tabler/icons-vue';
+import { ref } from 'vue';
+
+const showAddTransaction = ref(false);
 const page = usePage()
+const emits = defineEmits(['reload']);
 const routes = [
   {
     name: 'Dashboard',
-    icon: 'ti-layout-dashboard',
-    route: '/test'
+    icon: IconLayoutDashboard,
+    route: '/home'
   },
   {
     name: 'Transactions',
-    icon: 'ti-cash-register',
-    route: '/test'
+    icon: IconCashRegister,
+    route: '/home'
   },
   {
     name: 'Budgets',
-    icon: 'ti-wallet',
-    route: '/test'
+    icon: IconWallet,
+    route: '/home'
   }
 ];
 </script>

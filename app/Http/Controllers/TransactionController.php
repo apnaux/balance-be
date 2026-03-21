@@ -32,19 +32,20 @@ class TransactionController extends Controller
         $options = UserOption::where('user_id', Auth::id())->first();
         $cycle = DB::select("
                 SELECT
-                    (UTrC.total_income - UTrC.to_save) AS 'allocated_budget',
+                    (MAX(UTrC.total_income) - MAX(UTrC.to_save)) AS 'allocated_budget',
                     COALESCE(SUM(T.amount), 0) AS 'statement_balance',
-                    (SELECT COUNT(*) FROM user_transaction_cycles WHERE user_id = ?) AS 'cycle_counts',
-                    UTrC.active_from,
-                    UTrC.active_until
+                    MAX(UTrC.active_from) as 'active_from',
+                    MAX(UTrC.active_until) as 'active_until'
                 FROM user_transaction_cycles AS UTrC
-                LEFT JOIN transactions T ON T.user_id = UtrC.user_id
+                LEFT JOIN transactions T ON T.user_id = UTrC.user_id
                     AND T.created_at BETWEEN UTrC.active_from AND UTrC.active_until
-                WHERE UTRC.user_id = ?
+                WHERE UTrC.user_id = ?
                 GROUP BY UTrC.id
                 ORDER BY UTrC.id DESC
                 LIMIT 1 OFFSET ?
-            ", [Auth::id(), Auth::id(), $request->iterations ?? 0])[0];
+            ", [Auth::id(), $request->iterations ?? 0])[0];
+
+        $cycleCounts = DB::select("SELECT COUNT(*) AS 'count' FROM user_transaction_cycles WHERE user_id = ?", [Auth::id()])[0];
 
         $now = Carbon::now($options->timezone)->timezone('UTC');
         $dailySpend = Transaction::where('user_id', Auth::id())
@@ -53,15 +54,15 @@ class TransactionController extends Controller
             ->sum('amount');
 
         return response()->json([
-            'statement_date' => Carbon::parse($cycle->active_from, 'UTC')->timezone($options->timezone)->format('Y-m-d'),
             'has_overspent' => $cycle->allocated_budget < $cycle->statement_balance,
             'allocated_budget' => Number::currency(round($cycle->allocated_budget / 100, 2) ?? 0, $options->currency),
             'statement_balance' => Number::currency(round($cycle->statement_balance / 100, 2) ?? 0, $options->currency),
             'remaining_balance' => Number::currency(round(($cycle->allocated_budget - $cycle->statement_balance) / 100, 2) ?? 0, $options->currency),
             'daily_spend' => Number::currency(round($dailySpend / 100, 2) ?? 0, $options->currency),
-            'active_from' => $cycle->active_from,
-            'active_until' => $cycle->active_until,
-            'last_item' => $request->iterations >= $cycle->cycle_counts - 1,
+            'active_from' => Carbon::parse($cycle->active_from, 'UTC')->timezone($options->timezone)->format('F d'),
+            'active_until' => Carbon::parse($cycle->active_until, 'UTC')->timezone($options->timezone)->format('F d, Y'),
+            'total_cycles' => $cycleCounts->count,
+            'last_item' => $request->iterations >= $cycleCounts->count - 1,
         ]);
     }
 

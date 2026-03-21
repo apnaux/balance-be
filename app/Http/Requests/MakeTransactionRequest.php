@@ -30,7 +30,8 @@ class MakeTransactionRequest extends FormRequest
             'currency' => 'string|nullable',
             'amount' => 'numeric|required',
             'name' => 'required|string',
-            'tag_id' => 'required|integer|exists:tags,id'
+            'tag_id' => 'required|integer|exists:tags,id',
+            'transacted_at' => 'nullable'
         ];
     }
 
@@ -41,13 +42,16 @@ class MakeTransactionRequest extends FormRequest
      */
     public function make()
     {
-
         $options = UserOption::where('user_id', Auth::id())->first();
+        $transacted_at = $this->transacted_at ? Carbon::parse($this->transacted_at, $options->timezone)->timezone('UTC')->toDateTimeString()
+            : now($options->timezone)->timezone('UTC')->toDateTimeString();
+
         $transaction = new Transaction([
             'name' => $this->name,
             'currency' => $options->currency,
             'amount' => $this->amount,
-            'tag_id' =>  $this->tag_id
+            'tag_id' =>  $this->tag_id,
+            'transacted_at' => $transacted_at
         ]);
 
         $transaction->user()->associate(Auth::user());

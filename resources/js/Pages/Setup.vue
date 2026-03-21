@@ -10,8 +10,8 @@
           </p>
         </div>
         <form @submit.prevent="submit" class="w-3/5 flex flex-col gap-4">
-          <NumberInput :min="0" :max="999999999" :step="1000" title="Total Income" v-model="form.total_income" required />
-          <NumberInput :min="0" :max="999999999" :step="1000" title="Planned Savings" v-model="form.to_save" required />
+          <NumberInput :min="0" :max="999999999" :step="100" title="Total Income" v-model="form.total_income" required />
+          <NumberInput :min="0" :max="999999999" :step="100" title="Planned Savings" v-model="form.to_save" required />
           <NumberInput :min="1" :max="31" title="Cycle Cutoff" v-model="form.cycle_cutoff" required />
           <!-- TODO: Add option to add unspent budget to next cutoff or not -->
           <DefaultButton fluid type="submit">Finish Setup</DefaultButton>

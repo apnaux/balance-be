@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\Utils;
 use App\Models\Transaction;
+use App\Models\UserOption;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +44,7 @@ class TransactionRequest extends FormRequest
      */
     public function retrieve()
     {
+        $options = UserOption::where('user_id', Auth::id())->first();
         return Transaction::when($this->is_selection, function ($query) {
             $query->select([
                 'name as label',
@@ -63,6 +67,10 @@ class TransactionRequest extends FormRequest
             $query->whereBetween('created_at', $this->cycle_start_end);
         })
         ->orderByDesc('created_at')
-        ->cursorPaginate($this->per_page ?? 10);
+        ->paginate($this->per_page ?? 10)
+        ->through(function ($transaction) use ($options) {
+            $transaction->transacted_at = Carbon::parse($transaction->transacted_at, 'UTC')->timezone($options->timezone)->format("F d, Y, h:i:s A");
+            return $transaction;
+        });
     }
 }

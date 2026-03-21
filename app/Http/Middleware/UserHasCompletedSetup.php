@@ -17,7 +17,7 @@ class UserHasCompletedSetup
     public function handle(Request $request, Closure $next): Response
     {
         $options = Auth::user()->option;
-        if (empty($options) && $request->route()->getName() != 'hello.show') {
+        if (empty($options) && !in_array($request->route()->getName(), ['hello.show', 'hello.store'])) {
             if ($request->header('Content-Type') == 'application/json') {
                 return response()->json([
                     'message' => 'You should run the first time configuration first before you can access other features.'

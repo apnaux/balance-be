@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserOptionController;
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\CheckIfTransactionCycleExists;
@@ -20,14 +23,30 @@ Route::middleware(['guest'])->group(function () {
     });
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::inertia('/hello', 'Setup')->middleware([UserHasCompletedSetup::class])->name('hello.show');
-    Route::post('/hello', [UserOptionController::class, 'setOptions'])->middleware([UserHasCompletedSetup::class])->name('hello.store');
+Route::middleware(['auth:web', UserHasCompletedSetup::class])->group(function () {
+    Route::inertia('/hello', 'Setup')->name('hello.show');
+    Route::post('/hello', [UserOptionController::class, 'setOptions'])->name('hello.store');
 
-    Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
-        Route::inertia('/home', 'Dashboard')->name('home');
+    Route::middleware([CheckIfTransactionCycleExists::class])->group(function () {
+        Route::inertia('/home', 'Dashboard/Index')->name('home');
         Route::get('/test', fn () => redirect()->route('home'))->name('testing');
-        // Route::get('/tags', fn () => Inertia::render(component: 'Tags/Index'));
+
+        Route::prefix('/tags')->name('tags.')->group(function () {
+            Route::inertia('/', 'Tags.index')->name('tags.index');
+            Route::get('/list', [TagController::class, 'list'])->name('list');
+        });
+
+        Route::prefix('/transactions')->name('transactions.')->group(function () {
+            Route::get('/list', [TransactionController::class, 'list'])->name('list');
+            Route::post('/', [TransactionController::class, 'create'])->name('create');
+            Route::get('/per-cycle', [TransactionController::class, 'perCycleData'])->name('cycle-data');
+        });
+
+        Route::prefix('/accounts')->name('accounts.')->group(function () {
+            Route::get('/list', [AccountController::class, 'list'])->name('list');
+            Route::post('/', [AccountController::class, 'create'])->name('create');
+            Route::patch('/', [AccountController::class, 'update'])->name('update');
+        });
     });
 
     Route::post('/revoke', [AuthenticationController::class, 'revoke'])->name('revoke');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TransactionController;
@@ -20,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/revoke', [AuthenticationController::class, 'revoke']);
 });
 
-Route::middleware(['auth:web,sanctuum'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('/user')->group(function () {
         Route::get('/', fn () => User::with(['option'])->find(Auth::id()));
         Route::post('/update', [UserOptionController::class, 'setOptions']);
@@ -28,12 +29,12 @@ Route::middleware(['auth:web,sanctuum'])->group(function () {
 
     Route::middleware([UserHasCompletedSetup::class, CheckIfTransactionCycleExists::class])->group(function () {
         Route::prefix('/transactions')->group(function () {
-            Route::get('/', [TransactionController::class, 'list']);
-            Route::post('/', [TransactionController::class, 'create']);
-            Route::patch('/', [TransactionController::class, 'update']);
-            Route::delete('/', [TransactionController::class, 'delete']);
-            Route::post('/post', [TransactionController::class, 'post']);
-            Route::post('/per-cycle', [TransactionController::class, 'perCycleData']);
+            Route::get('', [TransactionController::class, 'list']);
+            Route::put('', [TransactionController::class, 'create']);
+            Route::patch('', [TransactionController::class, 'update']);
+            Route::delete('', [TransactionController::class, 'delete']);
+            Route::post('/', [TransactionController::class, 'post']);
+            Route::get('/per-cycle', [TransactionController::class, 'perCycleData']);
         });
 
         Route::prefix('/tags')->group(function () {
@@ -41,6 +42,12 @@ Route::middleware(['auth:web,sanctuum'])->group(function () {
             Route::post('/', [TagController::class, 'create']);
             Route::patch('/', [TagController::class, 'update']);
             Route::delete('/', [TagController::class, 'delete']);
+        });
+
+        Route::prefix('/accounts')->group(function () {
+            Route::get('/', [AccountController::class, 'list']);
+            Route::post('/', [AccountController::class, 'create']);
+            Route::patch('/', [AccountController::class, 'update']);
         });
     });
 });

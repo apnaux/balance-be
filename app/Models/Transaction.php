@@ -10,14 +10,7 @@ use Illuminate\Support\Number;
 
 class Transaction extends Model
 {
-    protected $fillable = [
-        'name',
-        'currency',
-        'amount',
-        'recurring_transaction_id',
-        'tag_id',
-        'posted_at'
-    ];
+    protected $guarded = [];
 
     protected $appends = [
         'formatted_amount'
