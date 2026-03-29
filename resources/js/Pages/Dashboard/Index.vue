@@ -64,9 +64,9 @@
       </Card>
     </div>
 
-    <div class="flex flex-col gap-4 mb-4">
+    <div class="flex flex-col gap-4 mb-4" v-if="transactions">
       <h2 class="text-body ml-2">Transactions List</h2>
-      <TableContainer v-if="transactions">
+      <TableContainer>
         <template #header>
           <TableCell type="th" scope="col" formatting="th">
             Transaction Date
@@ -105,7 +105,9 @@
           </template>
         </template>
       </TableContainer>
-      <Pagination class="self-end mr-3"/>
+      <Pagination class="self-end mr-3" v-model="filters.page" :lastPage="transactions.last_page"
+        @previous="filters.page = filters.page <= 1 ? 1 : filters.page - 1"
+        @next="filters.page = transactions.last_page >= filters.page ? transactions.last_page : filters.page + 1" />
     </div>
   </AuthenticatedLayout>
 
@@ -135,12 +137,17 @@ import {
 } from "@tabler/icons-vue";
 import { usePage } from "@inertiajs/vue3";
 import { route } from 'ziggy-js';
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 
 const page = usePage();
 const data = ref();
 const transactions = ref();
 const selectedTransaction = ref();
+
+const filters = reactive({
+  page: 1,
+  per_page: 5
+});
 
 const retrieveCycleInformation = async () => {
   await axios.get(route('transactions.cycle-data'))
@@ -150,7 +157,7 @@ const retrieveCycleInformation = async () => {
 };
 
 const getTransactions = async () => {
-  await axios.get(route('transactions.list'))
+  await axios.get(route('transactions.list', filters))
     .then((res) => {
       transactions.value = res.data;
     })
@@ -160,6 +167,10 @@ const getData = async () => {
   await retrieveCycleInformation();
   await getTransactions();
 }
+
+watch(filters, () => {
+  getTransactions();
+})
 
 onMounted(async () => {
   await getData()
