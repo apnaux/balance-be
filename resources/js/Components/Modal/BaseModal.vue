@@ -48,7 +48,6 @@ const props = defineProps({
 });
 
 const modalZIndex = computed(() => {
-  // console.log(modalId.value);
   if (modalManager.stack.length && modalId.value) {
     return modalManager.getZIndex(modalId.value);
   }

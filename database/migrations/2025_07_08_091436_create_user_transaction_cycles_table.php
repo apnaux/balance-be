@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_transaction_cycles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
             $table->string('currency')->default('PHP');
+            $table->string('timezone')->default('Asia/Manila');
             $table->integer('total_income')->default(0);
             $table->integer('to_save')->default(0);
             $table->timestamp('active_from')->index('transaction_active_time_start_date');

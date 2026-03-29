@@ -13,12 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_options', function (Blueprint $table) {
-            $table->foreignIdFor(User::class, 'user_id')->unique();
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
             $table->string('currency')->default('PHP');
+            $table->string('timezone')->default('Asia/Manila');
             $table->integer('cycle_cutoff')->default(1);
             $table->integer('total_income')->default(0);
             $table->integer('to_save')->default(0);
-            $table->string('timezone')->nullable();
             $table->timestamps();
         });
     }

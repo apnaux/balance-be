@@ -68,17 +68,15 @@ class TransactionController extends Controller
 
     public function create(MakeTransactionRequest $request)
     {
-        $request->make();
+        $request->createTransaction();
         return response()->json([
             'message' => 'The transaction has been saved!'
         ]);
     }
 
-    public function update(Request $request)
+    public function update(MakeTransactionRequest $request)
     {
-        Transaction::find($request->id)
-            ->update($request->only(['amount', 'name', 'tag_id', 'transactable_id']));
-
+        $request->updateTransaction();
         return response()->json([
             'message' => 'The transaction has been updated!'
         ]);

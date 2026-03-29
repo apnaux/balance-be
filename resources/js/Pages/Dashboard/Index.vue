@@ -14,7 +14,7 @@
     -->
     <div class="flex flex-col ml-4 mb-6">
       <h2 class="leading-5  text-body">Howdy,</h2>
-      <h1 class="leading-7  text-heading text-3xl">@{{ page.props.user.username }}</h1>
+      <h1 class="leading-7  text-heading text-3xl">{{ page.props.user.username }}</h1>
     </div>
 
     <div class="flex gap-3 mb-4" v-if="data">
@@ -30,11 +30,11 @@
       </Card>
       <Card class="grow">
         <IconCashMove :size="24" class="text-body mb-2"/>
-        <p class="text-body text-sm">Total Cutoff Spend</p>
+        <p class="text-body text-sm">Total Cycle Spend</p>
         <p class="text-heading text-2xl">{{ data.statement_balance }}</p>
       </Card>
       <Card class="grow">
-        <IconCalendarStats :size="24" class="text-body mb-2"/>
+        <IconMoneybag :size="24" class="text-body mb-2"/>
         <p class="text-body text-sm">Remaining Balance</p>
         <p class="text-heading text-2xl">{{ data.remaining_balance }} <span class="text-body font-base">of</span> {{ data.allocated_budget }}</p>
       </Card>
@@ -51,8 +51,8 @@
       <Card class="grow h-96">
         <!-- Line Chart -->
         <div class="flex gap-2">
-          <IconChartLine :size="24" class="text-body"/>
-          <p class="text-body">Savings Growth</p>
+          <IconCalendarDue :size="24" class="text-body"/>
+          <p class="text-body">Credit Accounts</p>
         </div>
       </Card>
       <Card class="grow h-96">
@@ -74,31 +74,48 @@
           <TableCell type="th" scope="col" formatting="th">Label</TableCell>
           <TableCell type="th" scope="col" formatting="th">Amount</TableCell>
           <TableCell type="th" scope="col" formatting="th">Tag</TableCell>
+          <TableCell type="th" scope="col" formatting="th">Account</TableCell>
           <TableCell type="th" scope="col" formatting="th"></TableCell>
         </template>
         <template #body>
-          <TableRow v-for="txn in transactions.data">
-            <TableCell scope="row" formatting="tdHighlight">
-              {{ txn.transacted_at }}
-            </TableCell>
-            <TableCell>{{ txn.name }}</TableCell>
-            <TableCell>{{ txn.formatted_amount }}</TableCell>
-            <TableCell>{{ txn.tag.name }}</TableCell>
-            <TableCell>
-              <div class="flex w-full justify-center items-center">
-                <IconDots :size="18" />
-              </div>
-            </TableCell>
-          </TableRow>
+          <template v-if="transactions.data.length > 0">
+            <TableRow v-for="txn in transactions.data">
+              <TableCell scope="row" formatting="tdHighlight">
+                {{ txn.transacted_at_converted }}
+              </TableCell>
+              <TableCell>{{ txn.name }}</TableCell>
+              <TableCell>{{ txn.formatted_amount }}</TableCell>
+              <TableCell>{{ txn.tag.name }}</TableCell>
+              <TableCell>{{ txn.account.name }}</TableCell>
+              <TableCell>
+                <div class="flex w-full justify-center items-center">
+                  <OutlineButton size="xs" @click="selectedTransaction = txn" color="grey">
+                    <IconDots :size="18" />
+                  </OutlineButton>
+                </div>
+              </TableCell>
+            </TableRow>
+          </template>
+          <template v-else>
+            <TableRow>
+              <TableCell scope="row" formatting="tdHighlight" colspan="6">
+                No transactions...
+              </TableCell>
+            </TableRow>
+          </template>
         </template>
       </TableContainer>
       <Pagination class="self-end mr-3"/>
     </div>
   </AuthenticatedLayout>
+
+  <TransactionOptions v-model="selectedTransaction" @close="selectedTransaction = null" @reload="getData()"/>
 </template>
 
 <script setup>
 import AuthenticatedLayout from "@/Components/Layouts/AuthenticatedLayout.vue";
+import TransactionOptions from "@/Composites/TransactionOptions.vue";
+import OutlineButton from "@/Components/Buttons/OutlineButton.vue";
 import TableContainer from "@/Components/Tables/TableContainer.vue";
 import TableRow from "@/Components/Tables/TableRow.vue";
 import TableCell from "@/Components/Tables/TableCell.vue";
@@ -111,9 +128,9 @@ import {
   IconCalendarRepeat,
   IconMoneybagMinus,
   IconCashMove,
-  IconCalendarStats,
+  IconMoneybag,
+  IconCalendarDue,
   IconChartPie4,
-  IconChartLine,
   IconChartBar
 } from "@tabler/icons-vue";
 import { usePage } from "@inertiajs/vue3";
@@ -123,6 +140,7 @@ import { onMounted, ref } from "vue";
 const page = usePage();
 const data = ref();
 const transactions = ref();
+const selectedTransaction = ref();
 
 const retrieveCycleInformation = async () => {
   await axios.get(route('transactions.cycle-data'))

@@ -39,6 +39,9 @@ Route::middleware(['auth:web', UserHasCompletedSetup::class])->group(function ()
         Route::prefix('/transactions')->name('transactions.')->group(function () {
             Route::get('/list', [TransactionController::class, 'list'])->name('list');
             Route::post('/', [TransactionController::class, 'create'])->name('create');
+            Route::patch('/', [TransactionController::class, 'update'])->name('update');
+            Route::delete('/', [TransactionController::class, 'delete'])->name('delete');
+            Route::post('/post-transaction', [TransactionController::class, 'post'])->name('post-transaction');
             Route::get('/per-cycle', [TransactionController::class, 'perCycleData'])->name('cycle-data');
         });
 

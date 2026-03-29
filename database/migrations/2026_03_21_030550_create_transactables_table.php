@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transactables', function (Blueprint $table) {
-            $table->foreignId('transaction_id')->references('id')->on('transactions');
+            $table->foreignId('transaction_id')->constrained('transactions', 'id')->cascadeOnDelete();
             $table->morphs('transactable');
         });
     }

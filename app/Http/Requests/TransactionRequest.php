@@ -51,9 +51,7 @@ class TransactionRequest extends FormRequest
                 'id as value'
             ]);
         })
-        ->with([
-            'tag'
-        ])
+        ->with(['tag', 'account'])
         ->where('user_id', Auth::id())
         ->when(filled($this->search), function ($query) {
             $query->where('name', 'like', "%{$this->search}%");
@@ -67,10 +65,6 @@ class TransactionRequest extends FormRequest
             $query->whereBetween('created_at', $this->cycle_start_end);
         })
         ->orderByDesc('created_at')
-        ->paginate($this->per_page ?? 10)
-        ->through(function ($transaction) use ($options) {
-            $transaction->transacted_at = Carbon::parse($transaction->transacted_at, 'UTC')->timezone($options->timezone)->format("F d, Y, h:i:s A");
-            return $transaction;
-        });
+        ->paginate($this->per_page ?? 10);
     }
 }

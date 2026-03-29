@@ -27,10 +27,13 @@ class MakeTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => 'integer|nullable',
             'currency' => 'string|nullable',
+            'timezone' => 'string|nullable',
             'amount' => 'numeric|required',
             'name' => 'required|string',
             'tag_id' => 'required|integer|exists:tags,id',
+            'account_id' => 'required|integer',
             'transacted_at' => 'nullable'
         ];
     }
@@ -40,7 +43,7 @@ class MakeTransactionRequest extends FormRequest
      *
      * @return bool
      */
-    public function make()
+    public function createTransaction()
     {
         $options = UserOption::where('user_id', Auth::id())->first();
         $transacted_at = $this->transacted_at ? Carbon::parse($this->transacted_at, $options->timezone)->timezone('UTC')->toDateTimeString()
@@ -48,14 +51,33 @@ class MakeTransactionRequest extends FormRequest
 
         $transaction = new Transaction([
             'name' => $this->name,
-            'currency' => $options->currency,
+            'currency' => $this->timezone ?? $options->currency,
+            'timezone' => $this->timezone ?? $options->timezone,
             'amount' => $this->amount,
             'tag_id' =>  $this->tag_id,
+            'account_id' => $this->account_id,
             'transacted_at' => $transacted_at
         ]);
 
         $transaction->user()->associate(Auth::user());
         $transaction->save();
+
+        return true;
+    }
+
+    public function updateTransaction()
+    {
+        $options = UserOption::where('user_id', Auth::id())->first();
+        $transaction = Transaction::find($this->id);
+        $transacted_at = $this->transacted_at ? Carbon::parse($this->transacted_at, $options->timezone)->timezone('UTC')->toDateTimeString() : $transaction->transacted_at;
+
+        $transaction->update([
+            'name' => $this->name,
+            'amount' => $this->amount,
+            'tag_id' =>  $this->tag_id,
+            'account_id' => $this->account_id,
+            'transacted_at' => $transacted_at
+        ]);
 
         return true;
     }

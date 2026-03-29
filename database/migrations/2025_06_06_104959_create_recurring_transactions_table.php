@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('recurring_transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, 'user_id');
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
             $table->string('currency')->default('PHP');
             $table->string('name');
             $table->string('icon')->nullable();

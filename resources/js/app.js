@@ -1,9 +1,12 @@
 import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 import { createInertiaApp } from '@inertiajs/vue3'
-// import 'flowbite';
 
+// Tabler Icons
 import '@tabler/icons-webfont/dist/tabler-icons.css';
+
+// Vue Date Picker
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const pinia = createPinia();
 createInertiaApp({

@@ -102,13 +102,12 @@
   </div>
 
   <!-- Add Transactions -->
-  <AddTransactionModal v-model:show="showAddTransaction" @reload="emits('reload')"/>
+  <TransactionForm v-model:show="showAddTransaction" @reload="emits('reload')"/>
 </template>
 
 <script setup>
 import Dropdown from '../Dropdown.vue';
-import InputModal from '../Modal/InputModal.vue';
-import AddTransactionModal from './Forms/AddTransactionModal.vue';
+import TransactionForm from '../../Composites/Forms/Transaction.vue';
 
 import { Link, usePage } from '@inertiajs/vue3';
 import { IconLayoutDashboard, IconCashRegister, IconWallet } from '@tabler/icons-vue';
