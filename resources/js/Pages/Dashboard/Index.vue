@@ -13,8 +13,8 @@
         - Most purchased item based on tag in current cutoff (Pie Chart)
     -->
     <div class="flex flex-col ml-4 mb-6">
-      <h2 class="leading-5  text-body">Howdy,</h2>
-      <h1 class="leading-7  text-heading text-3xl">{{ page.props.user.username }}</h1>
+      <h2 class="leading-5 text-body">Howdy,</h2>
+      <h1 class="leading-7 text-heading text-3xl">{{ page.props.user.username }}</h1>
     </div>
 
     <div class="flex gap-3 mb-4" v-if="data">

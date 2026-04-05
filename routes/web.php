@@ -29,6 +29,7 @@ Route::middleware(['auth:web', UserHasCompletedSetup::class])->group(function ()
 
     Route::middleware([CheckIfTransactionCycleExists::class])->group(function () {
         Route::inertia('/home', 'Dashboard/Index')->name('home');
+        Route::inertia('/me', 'Account/Settings')->name('me');
         Route::get('/test', fn () => redirect()->route('home'))->name('testing');
 
         Route::prefix('/tags')->name('tags.')->group(function () {

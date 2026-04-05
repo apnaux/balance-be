@@ -5,6 +5,10 @@ import { createInertiaApp } from '@inertiajs/vue3'
 // Tabler Icons
 import '@tabler/icons-webfont/dist/tabler-icons.css';
 
+// PrimeVue
+import PrimeVue from 'primevue/config';
+import Material from '@primeuix/themes/material';
+
 // Vue Date Picker
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -16,6 +20,12 @@ createInertiaApp({
   },
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
+      .use(PrimeVue, {
+        ripple: true,
+        theme: {
+          preset: Material
+        }
+      })
       .use(plugin)
       .use(pinia)
       .mount(el)

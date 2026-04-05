@@ -1,26 +1,29 @@
 <template>
   <div class="w-svw h-svh flex items-center justify-center">
-    <div class="w-full max-w-sm bg-neutral-primary-soft p-6 border border-default rounded-base shadow-xs">
-      <form @submit.prevent="form.post('/authenticate')">
-        <h5 class="text-xl font-semibold text-heading mb-6">Sign in to our platform</h5>
-        <div class="mb-4">
-          <label for="username" class="block mb-2.5 text-sm font-medium text-heading">Your username</label>
-          <input type="text" id="username"
-            class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-            placeholder="balanceuser" required v-model="form.username"/>
-        </div>
-        <Password class="mb-6" show-toggle required v-model="form.password" />
-        <DefaultButton fluid type="submit" class="mb-3">Login to your account</DefaultButton>
-        <div class="text-sm font-medium text-body">Not registered? <Link as="a" href="/register" class="text-fg-brand hover:underline">Create account</Link></div>
-      </form>
-    </div>
+    <Card class="w-[26rem] p-2">
+      <template #title><p class="leading-6.5 text-2xl">Welcome to<br/>balance!</p></template>
+      <template #subtitle>Login with your credentials.</template>
+      <template #content>
+        <form @submit.prevent="form.post('/authenticate')" class="flex gap-4 flex-col">
+          <FloatLabel variant="on">
+            <InputText id="username" type="text" v-model="form.username" fluid :autocomplete="false" />
+            <label for="username" class="text-sm">Your Username</label>
+          </FloatLabel>
+          <FloatLabel variant="on">
+            <Password id="password" v-model="form.password" fluid :feedback="false"/>
+            <label for="username" class="text-sm">Your Password</label>
+          </FloatLabel>
+          <Button label="Login to your account" icon="ti ti-check" size="small" type="submit"/>
+          <div class="text-sm font-medium text-body">Not registered? <Link as="a" href="/register" class="text-primary hover:underline">Create account</Link></div>
+        </form>
+      </template>
+    </Card>
   </div>
 </template>
 
 <script setup>
+import { InputText, FloatLabel, Password, Card, Button } from 'primevue';
 import { Link, useForm } from '@inertiajs/vue3';
-import DefaultButton from '@/Components/Buttons/DefaultButton.vue';
-import Password from '@/Components/Forms/Password.vue';
 
 const props = defineProps({
   errors: Object,
